@@ -31,9 +31,21 @@ export const metadata: Metadata = {
   authors: [{ name: "INP – Institut national de Pédologie" }],
   creator: "INP – Institut national de Pédologie",
   openGraph: {
-    type: "website",
-    locale: "fr_FR",
+    images: "/icon.png",
+    title: "INP – Institut national de Pédologie",
+    description:
+      "Institut parapublic à caractère scientifique et technologique. Recherche, cartographie pédologique, fertilité des sols et gestion durable des terres. Sous tutelle du Ministère de l'Agriculture.",
+    url: "https://inpsenegal.sn",
     siteName: "INP – Institut national de Pédologie",
+    locale: "fr_SN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "INP – Institut national de Pédologie",
+    description:
+      "Institut parapublic à caractère scientifique et technologique. Recherche, cartographie pédologique, fertilité des sols et gestion durable des terres. Sous tutelle du Ministère de l'Agriculture.",
+    images: "/icon.png",
   },
   robots: {
     index: true,
