@@ -1,0 +1,52 @@
+import type { NextAuthConfig } from "next-auth";
+import type { UserRole } from "@/lib/permissions/roles";
+import type { SENEGAL_REGIONS } from "@/lib/constants/senegal-regions";
+
+export const authConfig = {
+  pages: {
+    signIn: "/login",
+  },
+  session: {
+    strategy: "jwt",
+  },
+  providers: [],
+  callbacks: {
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user;
+      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
+
+      if (isOnDashboard) {
+        return isLoggedIn;
+      }
+
+      return true;
+    },
+    jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.firstname = user.firstname;
+        token.lastname = user.lastname;
+        token.role = user.role;
+        token.section = user.section;
+        token.occupation = user.occupation;
+        token.avatar = user.avatar;
+      }
+      return token;
+    },
+    session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id as string;
+        session.user.email = token.email as string;
+        session.user.firstname = token.firstname as string;
+        session.user.lastname = token.lastname as string;
+        session.user.role = token.role as UserRole;
+        session.user.section = token.section as (typeof SENEGAL_REGIONS)[number];
+        session.user.occupation = token.occupation as string;
+        session.user.avatar = token.avatar as string | undefined;
+      }
+      return session;
+    },
+  },
+  trustHost: true,
+} satisfies NextAuthConfig;
