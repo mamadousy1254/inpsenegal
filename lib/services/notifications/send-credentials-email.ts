@@ -24,7 +24,7 @@ export async function sendCredentialsEmail({
 }) {
   const resend = getResendClient();
   const from =
-    process.env.RESEND_FROM_EMAIL ?? "INP Intranet <support@gsthiass.com>";
+    process.env.RESEND_FROM_EMAIL ?? "INP Intranet <support@inpsenegal.sn>";
 
   const { error } = await resend.emails.send({
     from,

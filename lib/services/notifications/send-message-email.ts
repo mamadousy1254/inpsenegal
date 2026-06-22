@@ -32,7 +32,7 @@ export async function sendMessageEmail({
 }) {
   const resend = getResendClient();
   const from =
-    process.env.RESEND_FROM_EMAIL ?? "INP Intranet <support@gsthiass.com>";
+    process.env.RESEND_FROM_EMAIL ?? "INP Intranet <support@inpsenegal.sn>";
 
   const safeMessage = escapeHtml(message).replace(/\n/g, "<br/>");
 
