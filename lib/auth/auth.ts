@@ -45,6 +45,46 @@ async function logLoginAttempt({
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
+  callbacks: {
+    ...authConfig.callbacks,
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.email = user.email;
+        token.firstname = user.firstname;
+        token.lastname = user.lastname;
+        token.role = user.role;
+        token.section = user.section;
+        token.occupation = user.occupation;
+        token.avatar = user.avatar;
+      }
+
+      if (token.id) {
+        try {
+          await connectDB();
+          const dbUser = await UserModel.findById(token.id)
+            .select(
+              "email firstname lastname role section occupation avatar isActive",
+            )
+            .lean();
+
+          if (dbUser?.isActive) {
+            token.email = dbUser.email;
+            token.firstname = dbUser.firstname;
+            token.lastname = dbUser.lastname;
+            token.role = dbUser.role;
+            token.section = dbUser.section;
+            token.occupation = dbUser.occupation;
+            token.avatar = dbUser.avatar;
+          }
+        } catch (error) {
+          console.error("JWT refresh utilisateur:", error);
+        }
+      }
+
+      return token;
+    },
+  },
   providers: [
     Credentials({
       name: "credentials",

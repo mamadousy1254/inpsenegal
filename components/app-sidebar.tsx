@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+
+import { useCurrentDbUser } from "@/components/providers/current-user-provider";
 
 import { NavDocuments } from "@/components/nav-documents";
 import { NavMain } from "@/components/nav-main";
@@ -39,7 +40,6 @@ import {
   HandshakeIcon,
 } from "lucide-react";
 import { USER_ROLE_LABELS } from "@/lib/permissions/roles";
-import type { UserRole } from "@/lib/permissions/roles";
 import { canManageSiteContent, canManageUsers, canManageLabRequests } from "@/lib/permissions/can";
 
 const navMain = [
@@ -97,13 +97,13 @@ const documents = [
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: session } = useSession();
+  const { user: dbUser } = useCurrentDbUser();
 
-  const user = session?.user
+  const user = dbUser
     ? {
-        name: `${session.user.firstname} ${session.user.lastname}`,
-        email: session.user.email ?? "",
-        avatar: session.user.avatar,
+        name: `${dbUser.firstname} ${dbUser.lastname}`,
+        email: dbUser.email,
+        avatar: dbUser.avatar,
       }
     : {
         name: "Utilisateur",
@@ -111,7 +111,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         avatar: undefined,
       };
 
-  const role = session?.user?.role as UserRole | undefined;
+  const role = dbUser?.role;
   const showUsers = role ? canManageUsers(role) : false;
   const showSiteContent = role ? canManageSiteContent(role) : false;
   const showLabRequests = role ? canManageLabRequests(role) : false;

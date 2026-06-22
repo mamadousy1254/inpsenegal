@@ -1,14 +1,12 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useCurrentDbUser } from "@/components/providers/current-user-provider";
 import { USER_ROLE_LABELS } from "@/lib/permissions/roles";
-import type { UserRole } from "@/lib/permissions/roles";
 
 export function SiteHeader({ title = "Tableau de bord" }: { title?: string }) {
-  const { data: session } = useSession();
-  const role = session?.user?.role as UserRole | undefined;
+  const { user, isLoading } = useCurrentDbUser();
 
   return (
     <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
@@ -20,12 +18,14 @@ export function SiteHeader({ title = "Tableau de bord" }: { title?: string }) {
         />
         <div className="flex flex-col">
           <h1 className="text-base font-medium">{title}</h1>
-          {session?.user && (
+          {user ? (
             <p className="text-xs text-muted-foreground">
-              {session.user.firstname} {session.user.lastname}
-              {role ? ` — ${USER_ROLE_LABELS[role]}` : ""}
+              {user.firstname} {user.lastname}
+              {` — ${USER_ROLE_LABELS[user.role]}`}
             </p>
-          )}
+          ) : !isLoading ? (
+            <p className="text-xs text-muted-foreground">Session active</p>
+          ) : null}
         </div>
       </div>
     </header>

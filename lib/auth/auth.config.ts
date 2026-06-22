@@ -21,19 +21,6 @@ export const authConfig = {
 
       return true;
     },
-    jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-        token.firstname = user.firstname;
-        token.lastname = user.lastname;
-        token.role = user.role;
-        token.section = user.section;
-        token.occupation = user.occupation;
-        token.avatar = user.avatar;
-      }
-      return token;
-    },
     session({ session, token }) {
       if (session.user) {
         session.user.id = token.id as string;

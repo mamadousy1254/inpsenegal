@@ -13,7 +13,7 @@ export async function GET() {
     await connectDB();
 
     const user = await UserModel.findById(session.user.id)
-      .select("firstname lastname email phone occupation section role")
+      .select("firstname lastname email phone occupation section role avatar")
       .lean();
 
     if (!user) {
@@ -30,6 +30,7 @@ export async function GET() {
         occupation: user.occupation,
         section: user.section,
         role: user.role,
+        avatar: user.avatar,
       },
     });
   } catch (error) {
