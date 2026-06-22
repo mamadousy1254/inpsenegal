@@ -40,7 +40,7 @@ function getSiteOrigin() {
 export async function notifyContactMessageSubmitted(item: SerializedContactMessage) {
   const resend = getResendClient();
   const from =
-    process.env.RESEND_FROM_EMAIL ?? "INP Intranet <support@gsthiass.com>";
+    process.env.RESEND_FROM_EMAIL ?? "INP Intranet <support@inpsenegal.sn>";
   const dashboardUrl = `${getSiteOrigin()}${CONTACT_DASHBOARD_URL}`;
 
   const html = `
@@ -80,7 +80,7 @@ export async function notifyContactMessageSubmitted(item: SerializedContactMessa
 export async function notifyContactMessageAcknowledgment(item: SerializedContactMessage) {
   const resend = getResendClient();
   const from =
-    process.env.RESEND_FROM_EMAIL ?? "INP Intranet <support@gsthiass.com>";
+    process.env.RESEND_FROM_EMAIL ?? "INP Intranet <support@inpsenegal.sn>";
 
   const html = `
     <div style="font-family:sans-serif;line-height:1.6;color:#1a1a1a;max-width:640px;">

@@ -37,7 +37,7 @@ function row(label: string, value?: string | null) {
 export async function notifyAnalysisRequestSubmitted(item: SerializedDemandeAnalyse) {
   const resend = getResendClient();
   const from =
-    process.env.RESEND_FROM_EMAIL ?? "INP Intranet <support@gsthiass.com>";
+    process.env.RESEND_FROM_EMAIL ?? "INP Intranet <support@inpsenegal.sn>";
 
   const fullName = `${item.firstName} ${item.lastName}`;
   const analyses = item.analysisTypes.length
