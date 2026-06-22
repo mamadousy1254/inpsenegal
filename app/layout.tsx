@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { JsonLdOrganization } from "@/components/seo/json-ld";
 import { ShellLayout } from "@/components/layout/ShellLayout";
+import { getSiteUrl, SITE_OG_IMAGE } from "@/lib/constants/site-url";
 import "./globals.css";
 
 // NB : les polices ne sont plus chargées via next/font/google (échec de
@@ -10,7 +11,7 @@ import "./globals.css";
 // globals.css avec des piles de polices système (aucune dépendance externe).
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://inp.sn"),
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: "INP – Institut national de Pédologie | Référence nationale en science des sols",
     template: "%s | INP – Institut national de Pédologie",
@@ -31,21 +32,36 @@ export const metadata: Metadata = {
   authors: [{ name: "INP – Institut national de Pédologie" }],
   creator: "INP – Institut national de Pédologie",
   openGraph: {
-    images: "/icon.png",
     title: "INP – Institut national de Pédologie",
     description:
       "Institut parapublic à caractère scientifique et technologique. Recherche, cartographie pédologique, fertilité des sols et gestion durable des terres. Sous tutelle du Ministère de l'Agriculture.",
-    url: "https://inpsenegal.sn",
+    url: "/",
     siteName: "INP – Institut national de Pédologie",
     locale: "fr_SN",
     type: "website",
+    images: [
+      {
+        url: SITE_OG_IMAGE.path,
+        width: SITE_OG_IMAGE.width,
+        height: SITE_OG_IMAGE.height,
+        alt: SITE_OG_IMAGE.alt,
+        type: SITE_OG_IMAGE.type,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "INP – Institut national de Pédologie",
     description:
       "Institut parapublic à caractère scientifique et technologique. Recherche, cartographie pédologique, fertilité des sols et gestion durable des terres. Sous tutelle du Ministère de l'Agriculture.",
-    images: "/icon.png",
+    images: [
+      {
+        url: SITE_OG_IMAGE.path,
+        width: SITE_OG_IMAGE.width,
+        height: SITE_OG_IMAGE.height,
+        alt: SITE_OG_IMAGE.alt,
+      },
+    ],
   },
   robots: {
     index: true,
