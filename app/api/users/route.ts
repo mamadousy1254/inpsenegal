@@ -9,6 +9,7 @@ import type { ContractType, UserRole } from "@/lib/permissions/roles";
 import { logActivity } from "@/lib/services/audit/log-activity";
 import { initLeaveBalanceForUser } from "@/lib/services/leave/init-leave-balance";
 import { prepareUserContractFields } from "@/lib/services/users/prepare-contract-fields";
+import { getMongoUserDuplicateMessage } from "@/lib/services/users/user-duplicate-error";
 
 export async function GET() {
   try {
@@ -72,9 +73,39 @@ export async function POST(req: Request) {
 
     if (existing) {
       return NextResponse.json(
-        { error: "Un utilisateur avec cet e-mail existe déjà" },
+        { error: "Un utilisateur avec cet e-mail existe déjà." },
         { status: 409 },
       );
+    }
+
+    const normalizedUsername = username?.trim().toLowerCase();
+    if (normalizedUsername) {
+      const usernameTaken = await UserModel.findOne({
+        username: normalizedUsername,
+      });
+      if (usernameTaken) {
+        return NextResponse.json(
+          {
+            error: `Le nom d'utilisateur « ${normalizedUsername} » est déjà utilisé.`,
+          },
+          { status: 409 },
+        );
+      }
+    }
+
+    const normalizedMatricule = rest.matricule?.trim();
+    if (normalizedMatricule) {
+      const matriculeTaken = await UserModel.findOne({
+        matricule: normalizedMatricule,
+      });
+      if (matriculeTaken) {
+        return NextResponse.json(
+          {
+            error: `Le matricule « ${normalizedMatricule} » est déjà utilisé.`,
+          },
+          { status: 409 },
+        );
+      }
     }
 
     const hashedPassword = await hashPassword(password);
@@ -147,8 +178,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ user: safeUser }, { status: 201 });
   } catch (error) {
     console.error("POST /api/users", error);
+    const duplicateMessage = getMongoUserDuplicateMessage(error);
+    if (duplicateMessage) {
+      return NextResponse.json({ error: duplicateMessage }, { status: 409 });
+    }
     return NextResponse.json(
-      { error: "Erreur lors de la création de l'utilisateur" },
+      { error: "Erreur lors de la création de l'utilisateur." },
       { status: 500 },
     );
   }

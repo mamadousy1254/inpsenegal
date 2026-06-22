@@ -20,6 +20,7 @@ import {
 import { logActivity } from "@/lib/services/audit/log-activity";
 import { ensureLeaveBalanceForUser } from "@/lib/services/leave/init-leave-balance";
 import { prepareUserContractFields } from "@/lib/services/users/prepare-contract-fields";
+import { getMongoUserDuplicateMessage } from "@/lib/services/users/user-duplicate-error";
 import type { UserDetail } from "@/lib/types/user-detail";
 
 function serializeUser(user: Record<string, unknown>): UserDetail {
@@ -331,8 +332,12 @@ export async function PATCH(
     return NextResponse.json({ user: serializeUser(user!) });
   } catch (error) {
     console.error("PATCH /api/users/[id]", error);
+    const duplicateMessage = getMongoUserDuplicateMessage(error);
+    if (duplicateMessage) {
+      return NextResponse.json({ error: duplicateMessage }, { status: 409 });
+    }
     return NextResponse.json(
-      { error: "Erreur lors de la mise à jour de l'utilisateur" },
+      { error: "Erreur lors de la mise à jour de l'utilisateur." },
       { status: 500 },
     );
   }
