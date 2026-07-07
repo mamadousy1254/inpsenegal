@@ -7,6 +7,7 @@ import { CMS_STATUSES } from "@/lib/constants/cms";
 import { resolvePublishedAt } from "@/lib/services/cms/serialize-actualite";
 import { serializeInstitutDelegation } from "@/lib/services/institut/serialize-institut-delegation";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { slugify, uniqueSlug } from "@/lib/utils/slug";
 
 const updateSchema = z.object({
@@ -140,6 +141,16 @@ export async function PATCH(req: Request, context: RouteContext) {
   item.updatedBy = new mongoose.Types.ObjectId(authResult.session!.user.id);
   await item.save();
 
+  await logCmsActivity({
+    actor: authResult.session.user,
+    actionType: "update",
+    resource: "InstitutDelegation",
+    resourceLabel: "Délégation (institut)",
+    resourceId: item._id.toString(),
+    title: item.name,
+    metadata: { status: item.status },
+  });
+
   return NextResponse.json(serializeInstitutDelegation(item));
 }
 
@@ -160,6 +171,20 @@ export async function DELETE(_req: Request, context: RouteContext) {
     return NextResponse.json({ error: "Délégation introuvable" }, { status: 404 });
   }
 
+  const deletedTitle = item.name;
+  const deletedId = item._id.toString();
   await item.deleteOne();
+
+  if (authResult.session) {
+    await logCmsActivity({
+      actor: authResult.session.user,
+      actionType: "delete",
+      resource: "InstitutDelegation",
+      resourceLabel: "Délégation (institut)",
+      resourceId: deletedId,
+      title: deletedTitle,
+    });
+  }
+
   return NextResponse.json({ success: true });
 }

@@ -12,6 +12,7 @@ import {
 import { resolvePublishedAt } from "@/lib/services/cms/serialize-actualite";
 import { serializeDocumentationResource } from "@/lib/services/documentation/serialize-documentation-resource";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { slugify, uniqueSlug } from "@/lib/utils/slug";
 
 const createSchema = z.object({
@@ -118,6 +119,16 @@ export async function POST(req: Request) {
     downloadUrl: data.downloadUrl,
     publishedAt: resolvePublishedAt({ status, publishedAt: data.publishedAt }),
     createdBy: authResult.session!.user.id,
+  });
+
+  await logCmsActivity({
+    actor: authResult.session.user,
+    actionType: "create",
+    resource: "Documentation",
+    resourceLabel: "Ressource documentaire",
+    resourceId: item._id.toString(),
+    title: item.title,
+    metadata: { status: item.status },
   });
 
   return NextResponse.json(serializeDocumentationResource(item), { status: 201 });

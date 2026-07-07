@@ -8,6 +8,7 @@ import {
   RESEARCH_AXIS_ICONS,
 } from "@/lib/constants/cms";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { resolvePublishedAt } from "@/lib/services/cms/serialize-actualite";
 import { serializeResearchAxis } from "@/lib/services/cms/serialize-research-axis";
 
@@ -82,6 +83,16 @@ export async function POST(req: Request) {
       publishedAt: parsed.data.publishedAt,
     }),
     createdBy: authResult.session.user.id,
+  });
+
+  await logCmsActivity({
+    actor: authResult.session.user,
+    actionType: "create",
+    resource: "ResearchAxis",
+    resourceLabel: "Axe de recherche",
+    resourceId: axis._id.toString(),
+    title: axis.title,
+    metadata: { status: axis.status },
   });
 
   return NextResponse.json(serializeResearchAxis(axis), { status: 201 });

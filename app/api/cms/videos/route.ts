@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/mongo/db";
 import CmsVideoModel from "@/lib/mongo/models/cms-video.model";
 import { CMS_STATUSES } from "@/lib/constants/cms";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { parseVideoUrl } from "@/lib/services/cms/video-url";
 import { resolvePublishedAt } from "@/lib/services/cms/serialize-actualite";
 
@@ -98,6 +99,16 @@ export async function POST(req: Request) {
       publishedAt: parsed.data.publishedAt,
     }),
     createdBy: authResult.session.user.id,
+  });
+
+  await logCmsActivity({
+    actor: authResult.session.user,
+    actionType: "create",
+    resource: "Video",
+    resourceLabel: "Vidéo INP",
+    resourceId: video._id.toString(),
+    title: video.title,
+    metadata: { status: video.status, platform: video.platform },
   });
 
   return NextResponse.json(serializeVideo(video), { status: 201 });

@@ -6,6 +6,7 @@ import { CMS_STATUSES } from "@/lib/constants/cms";
 import { resolvePublishedAt } from "@/lib/services/cms/serialize-actualite";
 import { serializeMediathequeItem } from "@/lib/services/cms/serialize-mediatheque";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 
 const createSchema = z.object({
   imageUrl: z.string().trim().url("Image invalide"),
@@ -66,6 +67,16 @@ export async function POST(req: Request) {
     status,
     publishedAt: resolvePublishedAt({ status, publishedAt: data.publishedAt }),
     createdBy: authResult.session.user.id,
+  });
+
+  await logCmsActivity({
+    actor: authResult.session.user,
+    actionType: "create",
+    resource: "MediaAsset",
+    resourceLabel: "Média (galerie)",
+    resourceId: item._id.toString(),
+    title: item.caption,
+    metadata: { status: item.status },
   });
 
   return NextResponse.json(serializeMediathequeItem(item), { status: 201 });

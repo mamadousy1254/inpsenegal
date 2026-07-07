@@ -11,6 +11,7 @@ import {
 import { resolvePublishedAt } from "@/lib/services/cms/serialize-actualite";
 import { serializePublication } from "@/lib/services/cms/serialize-publication";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { deleteCmsAsset } from "@/lib/services/cms/cloudinary-cms-upload";
 import { slugify, uniqueSlug } from "@/lib/utils/slug";
 
@@ -153,6 +154,16 @@ export async function PATCH(req: Request, context: RouteContext) {
     }
   }
 
+  await logCmsActivity({
+    actor: authResult.session.user,
+    actionType: "update",
+    resource: "Publication",
+    resourceLabel: "Publication",
+    resourceId: publication._id.toString(),
+    title: publication.title,
+    metadata: { status: publication.status },
+  });
+
   return NextResponse.json(serializePublication(publication));
 }
 
@@ -184,6 +195,20 @@ export async function DELETE(_req: Request, context: RouteContext) {
     }
   }
 
+  const deletedTitle = publication.title;
+  const deletedId = publication._id.toString();
   await publication.deleteOne();
+
+  if (authResult.session) {
+    await logCmsActivity({
+      actor: authResult.session.user,
+      actionType: "delete",
+      resource: "Publication",
+      resourceLabel: "Publication",
+      resourceId: deletedId,
+      title: deletedTitle,
+    });
+  }
+
   return NextResponse.json({ success: true });
 }

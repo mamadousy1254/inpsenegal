@@ -9,6 +9,7 @@ import {
   RESEARCH_AXIS_ICONS,
 } from "@/lib/constants/cms";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { resolvePublishedAt } from "@/lib/services/cms/serialize-actualite";
 import { serializeResearchAxis } from "@/lib/services/cms/serialize-research-axis";
 
@@ -82,6 +83,16 @@ export async function PATCH(req: Request, context: RouteContext) {
   axis.updatedBy = new mongoose.Types.ObjectId(authResult.session.user.id);
   await axis.save();
 
+  await logCmsActivity({
+    actor: authResult.session.user,
+    actionType: "update",
+    resource: "ResearchAxis",
+    resourceLabel: "Axe de recherche",
+    resourceId: axis._id.toString(),
+    title: axis.title,
+    metadata: { status: axis.status },
+  });
+
   return NextResponse.json(serializeResearchAxis(axis));
 }
 
@@ -102,6 +113,20 @@ export async function DELETE(_req: Request, context: RouteContext) {
     return NextResponse.json({ error: "Axe introuvable" }, { status: 404 });
   }
 
+  const deletedTitle = axis.title;
+  const deletedId = axis._id.toString();
   await axis.deleteOne();
+
+  if (authResult.session) {
+    await logCmsActivity({
+      actor: authResult.session.user,
+      actionType: "delete",
+      resource: "ResearchAxis",
+      resourceLabel: "Axe de recherche",
+      resourceId: deletedId,
+      title: deletedTitle,
+    });
+  }
+
   return NextResponse.json({ success: true });
 }

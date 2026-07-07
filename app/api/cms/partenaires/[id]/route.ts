@@ -8,6 +8,7 @@ import { PARTENAIRE_CATEGORIES } from "@/lib/constants/partenaires";
 import { resolvePublishedAt } from "@/lib/services/cms/serialize-actualite";
 import { serializePartenaire } from "@/lib/services/partenaires/serialize-partenaire";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { deleteCmsAsset } from "@/lib/services/cms/cloudinary-cms-upload";
 import { slugify, uniqueSlug } from "@/lib/utils/slug";
 
@@ -129,6 +130,16 @@ export async function PATCH(req: Request, context: RouteContext) {
     }
   }
 
+  await logCmsActivity({
+    actor: authResult.session.user,
+    actionType: "update",
+    resource: "Partenaire",
+    resourceLabel: "Partenaire",
+    resourceId: item._id.toString(),
+    title: item.nom,
+    metadata: { status: item.status },
+  });
+
   return NextResponse.json(serializePartenaire(item));
 }
 
@@ -157,6 +168,20 @@ export async function DELETE(_req: Request, context: RouteContext) {
     }
   }
 
+  const deletedTitle = item.nom;
+  const deletedId = item._id.toString();
   await item.deleteOne();
+
+  if (authResult.session) {
+    await logCmsActivity({
+      actor: authResult.session.user,
+      actionType: "delete",
+      resource: "Partenaire",
+      resourceLabel: "Partenaire",
+      resourceId: deletedId,
+      title: deletedTitle,
+    });
+  }
+
   return NextResponse.json({ success: true });
 }

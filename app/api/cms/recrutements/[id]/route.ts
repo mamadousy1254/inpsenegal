@@ -9,6 +9,7 @@ import {
 } from "@/lib/constants/recrutement";
 import { serializeRecrutement } from "@/lib/services/recrutement/serialize-recrutement";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { slugify, uniqueSlug } from "@/lib/utils/slug";
 import mongoose from "mongoose";
 
@@ -111,6 +112,19 @@ export async function PATCH(req: Request, context: RouteContext) {
   }
 
   await item.save();
+
+  if (authResult.session) {
+    await logCmsActivity({
+      actor: authResult.session.user,
+      actionType: "update",
+      resource: "Recrutement",
+      resourceLabel: "Offre de recrutement",
+      resourceId: item._id.toString(),
+      title: item.title,
+      metadata: { status: item.status },
+    });
+  }
+
   return NextResponse.json(serializeRecrutement(item));
 }
 
@@ -129,6 +143,17 @@ export async function DELETE(_req: Request, context: RouteContext) {
   const deleted = await RecrutementModel.findByIdAndDelete(id);
   if (!deleted) {
     return NextResponse.json({ error: "Offre introuvable" }, { status: 404 });
+  }
+
+  if (authResult.session) {
+    await logCmsActivity({
+      actor: authResult.session.user,
+      actionType: "delete",
+      resource: "Recrutement",
+      resourceLabel: "Offre de recrutement",
+      resourceId: deleted._id.toString(),
+      title: deleted.title,
+    });
   }
 
   return NextResponse.json({ ok: true });

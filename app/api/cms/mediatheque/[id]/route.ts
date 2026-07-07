@@ -7,6 +7,7 @@ import { CMS_STATUSES } from "@/lib/constants/cms";
 import { resolvePublishedAt } from "@/lib/services/cms/serialize-actualite";
 import { serializeMediathequeItem } from "@/lib/services/cms/serialize-mediatheque";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { deleteCmsAsset } from "@/lib/services/cms/cloudinary-cms-upload";
 
 const updateSchema = z.object({
@@ -83,6 +84,16 @@ export async function PATCH(req: Request, context: RouteContext) {
     }
   }
 
+  await logCmsActivity({
+    actor: authResult.session.user,
+    actionType: "update",
+    resource: "MediaAsset",
+    resourceLabel: "Média (galerie)",
+    resourceId: item._id.toString(),
+    title: item.caption,
+    metadata: { status: item.status },
+  });
+
   return NextResponse.json(serializeMediathequeItem(item));
 }
 
@@ -112,6 +123,20 @@ export async function DELETE(_req: Request, context: RouteContext) {
     /* ignore cleanup errors */
   }
 
+  const deletedTitle = item.caption;
+  const deletedId = item._id.toString();
   await item.deleteOne();
+
+  if (authResult.session) {
+    await logCmsActivity({
+      actor: authResult.session.user,
+      actionType: "delete",
+      resource: "MediaAsset",
+      resourceLabel: "Média (galerie)",
+      resourceId: deletedId,
+      title: deletedTitle,
+    });
+  }
+
   return NextResponse.json({ success: true });
 }

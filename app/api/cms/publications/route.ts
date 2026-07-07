@@ -10,6 +10,7 @@ import {
 import { resolvePublishedAt } from "@/lib/services/cms/serialize-actualite";
 import { serializePublication } from "@/lib/services/cms/serialize-publication";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { slugify, uniqueSlug } from "@/lib/utils/slug";
 
 const createSchema = z.object({
@@ -106,6 +107,16 @@ export async function POST(req: Request) {
     status,
     publishedAt: resolvePublishedAt({ status, publishedAt: data.publishedAt }),
     createdBy: authResult.session.user.id,
+  });
+
+  await logCmsActivity({
+    actor: authResult.session.user,
+    actionType: "create",
+    resource: "Publication",
+    resourceLabel: "Publication",
+    resourceId: publication._id.toString(),
+    title: publication.title,
+    metadata: { status: publication.status },
   });
 
   return NextResponse.json(serializePublication(publication), { status: 201 });

@@ -9,6 +9,7 @@ import {
 } from "@/lib/constants/recrutement";
 import { serializeRecrutement } from "@/lib/services/recrutement/serialize-recrutement";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { slugify, uniqueSlug } from "@/lib/utils/slug";
 
 const createSchema = z.object({
@@ -100,6 +101,18 @@ export async function POST(req: Request) {
     references: data.references,
     status,
   });
+
+  if (authResult.session) {
+    await logCmsActivity({
+      actor: authResult.session.user,
+      actionType: "create",
+      resource: "Recrutement",
+      resourceLabel: "Offre de recrutement",
+      resourceId: item._id.toString(),
+      title: item.title,
+      metadata: { status: item.status },
+    });
+  }
 
   return NextResponse.json(serializeRecrutement(item), { status: 201 });
 }

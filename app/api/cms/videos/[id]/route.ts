@@ -5,6 +5,7 @@ import { connectDB } from "@/lib/mongo/db";
 import CmsVideoModel from "@/lib/mongo/models/cms-video.model";
 import { CMS_STATUSES } from "@/lib/constants/cms";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { parseVideoUrl } from "@/lib/services/cms/video-url";
 import { resolvePublishedAt } from "@/lib/services/cms/serialize-actualite";
 
@@ -98,6 +99,16 @@ export async function PATCH(req: Request, context: RouteContext) {
   video.updatedBy = new mongoose.Types.ObjectId(authResult.session.user.id);
   await video.save();
 
+  await logCmsActivity({
+    actor: authResult.session.user,
+    actionType: "update",
+    resource: "Video",
+    resourceLabel: "Vidéo INP",
+    resourceId: video._id.toString(),
+    title: video.title,
+    metadata: { status: video.status },
+  });
+
   return NextResponse.json(serializeVideo(video));
 }
 
@@ -118,6 +129,20 @@ export async function DELETE(_req: Request, context: RouteContext) {
     return NextResponse.json({ error: "Vidéo introuvable" }, { status: 404 });
   }
 
+  const deletedTitle = video.title;
+  const deletedId = video._id.toString();
   await video.deleteOne();
+
+  if (authResult.session) {
+    await logCmsActivity({
+      actor: authResult.session.user,
+      actionType: "delete",
+      resource: "Video",
+      resourceLabel: "Vidéo INP",
+      resourceId: deletedId,
+      title: deletedTitle,
+    });
+  }
+
   return NextResponse.json({ success: true });
 }

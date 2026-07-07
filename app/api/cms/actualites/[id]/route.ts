@@ -12,6 +12,7 @@ import {
   serializeActualite,
 } from "@/lib/services/cms/serialize-actualite";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { deleteCmsAsset } from "@/lib/services/cms/cloudinary-cms-upload";
 import { slugify, uniqueSlug } from "@/lib/utils/slug";
 
@@ -140,6 +141,16 @@ export async function PATCH(req: Request, context: RouteContext) {
     }
   }
 
+  await logCmsActivity({
+    actor: authResult.session.user,
+    actionType: "update",
+    resource: "Actualite",
+    resourceLabel: "Actualité",
+    resourceId: actualite._id.toString(),
+    title: actualite.title,
+    metadata: { status: actualite.status },
+  });
+
   return NextResponse.json(serializeActualite(actualite));
 }
 
@@ -171,6 +182,20 @@ export async function DELETE(_req: Request, context: RouteContext) {
     }
   }
 
+  const deletedTitle = actualite.title;
+  const deletedId = actualite._id.toString();
   await actualite.deleteOne();
+
+  if (authResult.session) {
+    await logCmsActivity({
+      actor: authResult.session.user,
+      actionType: "delete",
+      resource: "Actualite",
+      resourceLabel: "Actualité",
+      resourceId: deletedId,
+      title: deletedTitle,
+    });
+  }
+
   return NextResponse.json({ success: true });
 }

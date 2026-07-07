@@ -6,6 +6,7 @@ import {
   type ValidationStatus,
 } from "@/lib/constants/leave";
 import { formatGedShareDuration } from "@/lib/constants/ged";
+import { CMS_STATUS_LABELS, type CmsStatus } from "@/lib/constants/cms";
 
 const METADATA_LABELS: Record<string, string> = {
   targetEmail: "Personne concernée (e-mail)",
@@ -45,14 +46,30 @@ const METADATA_LABELS: Record<string, string> = {
   delegatorFullname: "Délégant",
   delegateFullname: "Délégué",
   delegatedValidation: "Validation déléguée",
-  onBehalfOf: "Pour le compte de",
+  title: "Titre",
+  status: "Statut",
+  category: "Catégorie",
 };
 
 const RESOURCE_LABELS: Record<string, string> = {
   User: "Utilisateur",
   AbsenceRequest: "Demande d'absence",
   GedFile: "Document GED",
+  GedFolder: "Dossier GED",
   ValidatorDelegation: "Délégation de validation",
+  Session: "Session",
+  // Contenu de site (CMS)
+  Actualite: "Actualité",
+  Publication: "Publication",
+  Video: "Vidéo INP",
+  ResearchAxis: "Axe de recherche",
+  ResearchProject: "Projet de recherche",
+  Partenaire: "Partenaire",
+  MediaAsset: "Média (galerie)",
+  Documentation: "Ressource documentaire",
+  InstitutMembre: "Membre de l'équipe",
+  InstitutDelegation: "Délégation (institut)",
+  Recrutement: "Offre de recrutement",
 };
 
 export function getResourceLabel(resource: string): string {
@@ -80,6 +97,10 @@ export function formatMetadataValue(
 
   if (key === "statutValidation" && typeof value === "string") {
     return VALIDATION_STATUS_LABELS[value as ValidationStatus] ?? value;
+  }
+
+  if (key === "status" && typeof value === "string") {
+    return CMS_STATUS_LABELS[value as CmsStatus] ?? value;
   }
 
   if (key === "expiresInMinutes" && typeof value === "number") {

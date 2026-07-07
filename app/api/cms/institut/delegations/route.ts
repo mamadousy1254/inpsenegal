@@ -6,6 +6,7 @@ import { CMS_STATUSES } from "@/lib/constants/cms";
 import { resolvePublishedAt } from "@/lib/services/cms/serialize-actualite";
 import { serializeInstitutDelegation } from "@/lib/services/institut/serialize-institut-delegation";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { slugify, uniqueSlug } from "@/lib/utils/slug";
 
 const createSchema = z.object({
@@ -106,6 +107,16 @@ export async function POST(req: Request) {
     status,
     publishedAt: resolvePublishedAt({ status, publishedAt: data.publishedAt }),
     createdBy: authResult.session!.user.id,
+  });
+
+  await logCmsActivity({
+    actor: authResult.session.user,
+    actionType: "create",
+    resource: "InstitutDelegation",
+    resourceLabel: "Délégation (institut)",
+    resourceId: item._id.toString(),
+    title: item.name,
+    metadata: { status: item.status },
   });
 
   return NextResponse.json(serializeInstitutDelegation(item), { status: 201 });

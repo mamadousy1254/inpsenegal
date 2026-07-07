@@ -7,6 +7,7 @@ import { INSTITUT_POLE_TYPES } from "@/lib/constants/institut";
 import { resolvePublishedAt } from "@/lib/services/cms/serialize-actualite";
 import { serializeInstitutMembre } from "@/lib/services/institut/serialize-institut-membre";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { slugify, uniqueSlug } from "@/lib/utils/slug";
 
 const createSchema = z.object({
@@ -87,6 +88,16 @@ export async function POST(req: Request) {
     status,
     publishedAt: resolvePublishedAt({ status, publishedAt: data.publishedAt }),
     createdBy: authResult.session!.user.id,
+  });
+
+  await logCmsActivity({
+    actor: authResult.session.user,
+    actionType: "create",
+    resource: "InstitutMembre",
+    resourceLabel: "Membre de l'équipe",
+    resourceId: item._id.toString(),
+    title: item.nom,
+    metadata: { status: item.status },
   });
 
   return NextResponse.json(serializeInstitutMembre(item), { status: 201 });

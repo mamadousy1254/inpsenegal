@@ -7,6 +7,7 @@ import { PARTENAIRE_CATEGORIES } from "@/lib/constants/partenaires";
 import { resolvePublishedAt } from "@/lib/services/cms/serialize-actualite";
 import { serializePartenaire } from "@/lib/services/partenaires/serialize-partenaire";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { slugify, uniqueSlug } from "@/lib/utils/slug";
 
 const createSchema = z.object({
@@ -94,6 +95,16 @@ export async function POST(req: Request) {
     status,
     publishedAt: resolvePublishedAt({ status, publishedAt: data.publishedAt }),
     createdBy: authResult.session!.user.id,
+  });
+
+  await logCmsActivity({
+    actor: authResult.session.user,
+    actionType: "create",
+    resource: "Partenaire",
+    resourceLabel: "Partenaire",
+    resourceId: item._id.toString(),
+    title: item.nom,
+    metadata: { status: item.status, category: item.category },
   });
 
   return NextResponse.json(serializePartenaire(item), { status: 201 });

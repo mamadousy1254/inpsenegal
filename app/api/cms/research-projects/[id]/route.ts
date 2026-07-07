@@ -5,6 +5,7 @@ import { connectDB } from "@/lib/mongo/db";
 import ResearchProjectModel from "@/lib/mongo/models/research-project.model";
 import { CMS_STATUSES, RESEARCH_PROJECT_STATUSES } from "@/lib/constants/cms";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { resolvePublishedAt } from "@/lib/services/cms/serialize-actualite";
 import { serializeResearchProject } from "@/lib/services/cms/serialize-research-project";
 
@@ -70,6 +71,16 @@ export async function PATCH(req: Request, context: RouteContext) {
   project.updatedBy = new mongoose.Types.ObjectId(authResult.session.user.id);
   await project.save();
 
+  await logCmsActivity({
+    actor: authResult.session.user,
+    actionType: "update",
+    resource: "ResearchProject",
+    resourceLabel: "Projet de recherche",
+    resourceId: project._id.toString(),
+    title: project.title,
+    metadata: { status: project.status },
+  });
+
   return NextResponse.json(serializeResearchProject(project));
 }
 
@@ -90,6 +101,20 @@ export async function DELETE(_req: Request, context: RouteContext) {
     return NextResponse.json({ error: "Projet introuvable" }, { status: 404 });
   }
 
+  const deletedTitle = project.title;
+  const deletedId = project._id.toString();
   await project.deleteOne();
+
+  if (authResult.session) {
+    await logCmsActivity({
+      actor: authResult.session.user,
+      actionType: "delete",
+      resource: "ResearchProject",
+      resourceLabel: "Projet de recherche",
+      resourceId: deletedId,
+      title: deletedTitle,
+    });
+  }
+
   return NextResponse.json({ success: true });
 }

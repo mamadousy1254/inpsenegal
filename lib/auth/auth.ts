@@ -8,6 +8,7 @@ import LoginHistoryModel from "@/lib/mongo/models/login-history.model";
 import UserModel from "@/lib/mongo/models/user.model";
 import { canAccessDashboard } from "@/lib/permissions/can";
 import type { UserRole } from "@/lib/permissions/roles";
+import { logActivity } from "@/lib/services/audit/log-activity";
 
 async function getRequestMeta() {
   const headerList = await headers();
@@ -45,6 +46,37 @@ async function logLoginAttempt({
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
+  events: {
+    async signOut(message) {
+      const token = "token" in message ? message.token : null;
+      const actor = token as {
+        id?: string;
+        email?: string;
+        firstname?: string;
+        lastname?: string;
+      } | null;
+      if (!actor?.id) return;
+
+      try {
+        await connectDB();
+        await logActivity({
+          actor: {
+            id: actor.id,
+            email: actor.email ?? "",
+            firstname: actor.firstname ?? "",
+            lastname: actor.lastname ?? "",
+          },
+          action: "auth.logout",
+          actionType: "logout",
+          resource: "Session",
+          resourceId: actor.id,
+          description: "Déconnexion du tableau de bord",
+        });
+      } catch (error) {
+        console.error("Journal déconnexion:", error);
+      }
+    },
+  },
   callbacks: {
     ...authConfig.callbacks,
     async jwt({ token, user }) {

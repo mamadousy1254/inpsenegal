@@ -4,6 +4,7 @@ import { connectDB } from "@/lib/mongo/db";
 import ResearchProjectModel from "@/lib/mongo/models/research-project.model";
 import { CMS_STATUSES, RESEARCH_PROJECT_STATUSES } from "@/lib/constants/cms";
 import { requireCmsAdmin } from "@/lib/services/cms/require-cms-admin";
+import { logCmsActivity } from "@/lib/services/cms/log-cms-activity";
 import { resolvePublishedAt } from "@/lib/services/cms/serialize-actualite";
 import { serializeResearchProject } from "@/lib/services/cms/serialize-research-project";
 
@@ -72,6 +73,16 @@ export async function POST(req: Request) {
       publishedAt: parsed.data.publishedAt,
     }),
     createdBy: authResult.session.user.id,
+  });
+
+  await logCmsActivity({
+    actor: authResult.session.user,
+    actionType: "create",
+    resource: "ResearchProject",
+    resourceLabel: "Projet de recherche",
+    resourceId: project._id.toString(),
+    title: project.title,
+    metadata: { status: project.status },
   });
 
   return NextResponse.json(serializeResearchProject(project), { status: 201 });
