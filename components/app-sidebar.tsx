@@ -39,6 +39,7 @@ import {
   BriefcaseIcon,
   Building2Icon,
   HandshakeIcon,
+  MailIcon,
 } from "lucide-react";
 import { USER_ROLE_LABELS } from "@/lib/permissions/roles";
 import { canManageSiteContent, canManageUsers, canManageLabRequests } from "@/lib/permissions/can";
@@ -144,6 +145,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       url: "/dashboard/rendez-vous",
       icon: <CalendarClockIcon />,
     },
+    {
+      name: "Newsletter",
+      url: "/dashboard/newsletter",
+      icon: <MailIcon />,
+    },
   ];
 
   const mainItems = [
@@ -181,7 +187,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton
               size="lg"
               className="h-auto gap-3 rounded-xl px-2 py-2.5 hover:bg-white/8 data-active:bg-transparent"
-              render={<Link href="/dashboard" />}
+              render={<Link href="/" />}
             >
               <div className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-[var(--inp-beige)] to-[#c4a882] text-sm font-bold text-[var(--inp-vert)] shadow-lg shadow-black/25 ring-1 ring-white/20">
                 <span className="relative z-10">INP</span>

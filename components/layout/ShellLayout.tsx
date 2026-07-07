@@ -5,6 +5,7 @@ import { Navbar } from "./Navbar";
 import { Footer } from "./footer";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import AnnouncementBar from "@/components/AnnouncementBar";
+import { Toaster } from "@/components/ui/sonner";
 
 /**
  * Conditionally renders the public shell (Navbar + Footer) based on path.
@@ -31,6 +32,7 @@ export function ShellLayout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
       <Footer />
+      <Toaster richColors position="top-right" />
     </>
   );
 }
