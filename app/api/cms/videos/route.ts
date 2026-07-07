@@ -78,7 +78,7 @@ export async function POST(req: Request) {
   const parsedVideo = parseVideoUrl(parsed.data.watchUrl);
   if (!parsedVideo) {
     return NextResponse.json(
-      { error: "Lien YouTube ou Facebook non reconnu" },
+      { error: "Lien vidéo non reconnu (utilisez une URL http ou https valide)" },
       { status: 400 },
     );
   }

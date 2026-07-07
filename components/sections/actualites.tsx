@@ -10,7 +10,6 @@ import {
   CATEGORY_COLORS,
   type NewsItem,
 } from "@/components/actualites/actualites-data";
-import { VideosSection, type PublishedVideoItem } from "@/components/actualites/VideosSection";
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
@@ -82,12 +81,10 @@ function NewsCard({ item, index }: { item: NewsItem; index: number }) {
 
 interface ActualitesProps {
   news: NewsItem[];
-  videos?: PublishedVideoItem[];
 }
 
-export function Actualites({ news, videos = [] }: ActualitesProps) {
+export function Actualites({ news }: ActualitesProps) {
   const homepageNews = news.slice(0, 3);
-  const homepageVideos = videos.slice(0, 4);
   return (
     <section
       className="py-20 px-4 bg-muted/40"
@@ -96,6 +93,7 @@ export function Actualites({ news, videos = [] }: ActualitesProps) {
       <div className="container mx-auto max-w-6xl">
         <SectionTitle
           id="actualites-title"
+          align="center"
           subtitle="Les dernières nouvelles de l'Institut."
         >
           Actualités
@@ -112,17 +110,13 @@ export function Actualites({ news, videos = [] }: ActualitesProps) {
         <div className="mt-10 text-center">
           <Link
             href="/actualites"
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#1F4D3A] via-[#2F6B4F] to-[#8B5E3C] px-6 py-2.5 text-[13px] font-semibold text-white shadow-md shadow-emerald-900/15 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-900/25 hover:scale-[1.02]"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#5E3D20] via-[#8A5E38] to-[#8B5E3C] px-6 py-2.5 text-[13px] font-semibold text-white shadow-md shadow-amber-900/15 transition-all duration-300 hover:shadow-lg hover:shadow-amber-900/25 hover:scale-[1.02]"
           >
             Voir toutes les actualités
             <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
 
-        {/* INP en vidéo */}
-        {homepageVideos.length > 0 && (
-          <VideosSection videos={homepageVideos} showTitle={false} embedded />
-        )}
       </div>
     </section>
   );

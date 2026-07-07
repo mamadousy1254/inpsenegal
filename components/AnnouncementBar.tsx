@@ -28,9 +28,11 @@ const TYPE_CONFIG: Record<
   AnnouncementType,
   { bg: string; label: string; Icon: typeof Megaphone; pulse?: boolean }
 > = {
+  // Charte INP : sable/crème + ocre/brun. Le rouge reste réservé à l'alerte URGENT ;
+  // les autres types restent dans la gamme ocre/brun (aucun vert vif).
   URGENT: { bg: "#E31B23", label: "URGENT", Icon: AlertTriangle, pulse: true },
   COMMUNIQUÉ: { bg: "#7B4F2A", label: "COMMUNIQUÉ", Icon: Megaphone },
-  INFO: { bg: "#00853F", label: "INFO", Icon: Info },
+  INFO: { bg: "var(--inp-marron)", label: "INFO", Icon: Info },
 };
 
 /* ------------------------------------------------------------------ */
@@ -127,7 +129,7 @@ export default function AnnouncementBar() {
         {/* ── Bouton LIRE ── */}
         <Link
           href={current.href}
-          className="inline-flex flex-shrink-0 items-center gap-1 rounded-full bg-[#C9A574] px-3 py-1.5 text-[12px] font-bold uppercase tracking-wider text-white shadow-sm transition-all duration-200 hover:bg-[#bb9560] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7B4F2A] focus-visible:ring-offset-1"
+          className="inline-flex flex-shrink-0 items-center gap-1 rounded-full bg-[var(--inp-marron)] px-3 py-1.5 text-[12px] font-bold uppercase tracking-wider text-white shadow-sm transition-all duration-200 hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7B4F2A] focus-visible:ring-offset-1"
           aria-label={`Lire l'annonce : ${current.title}`}
         >
           Lire

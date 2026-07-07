@@ -565,7 +565,7 @@ export function MobileMenu({
               <Link
                 href="/demande-analyse"
                 onClick={onClose}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--inp-vert)] px-6 py-3.5 text-sm font-semibold uppercase tracking-wider text-white shadow-md transition-all hover:shadow-lg hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--inp-vert)] focus-visible:ring-offset-2"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--inp-marron)] px-6 py-3.5 text-sm font-semibold uppercase tracking-wider text-white shadow-md transition-all hover:shadow-lg hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--inp-marron)] focus-visible:ring-offset-2"
               >
                 <FlaskConical className="h-4 w-4" />
                 Demande d&apos;analyse

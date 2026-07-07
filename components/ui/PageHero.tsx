@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { FlagStar } from "@/components/FlagStar";
 
 interface PageHeroProps {
   title: string;
@@ -42,18 +43,21 @@ export function PageHero({ title, subtitle, label }: PageHeroProps) {
         >
           {title}
         </motion.h1>
-        {/* Flag line */}
-        <motion.span
-          className="mx-auto mt-5 block h-[3px] w-24 rounded-full sm:w-32"
-          style={{
-            background:
-              "linear-gradient(90deg, #00853F 0%, #00853F 33%, #FDEF42 33%, #FDEF42 66%, #E31B23 66%, #E31B23 100%)",
-          }}
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
-          aria-hidden
-        />
+        {/* Flag line + étoile centrée sur la bande jaune */}
+        <span className="relative mx-auto mt-5 block w-24 sm:w-32">
+          <motion.span
+            className="block h-[3px] w-full rounded-full"
+            style={{
+              background:
+                "linear-gradient(90deg, #00853F 0%, #00853F 33%, #FDEF42 33%, #FDEF42 66%, #E31B23 66%, #E31B23 100%)",
+            }}
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
+            aria-hidden
+          />
+          <FlagStar size={14} />
+        </span>
         {subtitle && (
           <motion.p
             className="mx-auto mt-5 max-w-2xl text-base text-white/75 sm:text-lg"

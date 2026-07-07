@@ -104,6 +104,7 @@ export function Publications({ publications }: PublicationsProps) {
       <div className="container mx-auto max-w-6xl">
         <SectionTitle
           id="publications-title"
+          align="center"
           subtitle="Derniers rapports et études scientifiques."
         >
           Publications

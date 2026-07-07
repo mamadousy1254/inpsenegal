@@ -17,6 +17,10 @@ import {
   CmsVideoFormDialog,
   type CmsVideoItem,
 } from "@/components/dashboard/cms-video-form-dialog";
+import {
+  CmsListFilters,
+  useCmsListFilters,
+} from "@/components/dashboard/cms-list-filters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,9 +34,12 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   CMS_STATUS_LABELS,
+  CMS_VIDEO_PLATFORM_LABELS,
   NEWS_CATEGORY_LABELS,
+  type CmsVideoPlatform,
 } from "@/lib/constants/cms";
 import type { SerializedActualite } from "@/lib/services/cms/serialize-actualite";
+import { isDirectVideoFile } from "@/lib/services/cms/video-url";
 import { cn } from "@/lib/utils";
 
 function formatDate(value?: string) {
@@ -99,6 +106,16 @@ export function ActualitesPage() {
       void fetchVideos();
     }
   }, [tab, fetchActualites, fetchVideos]);
+
+  const actuFilters = useCmsListFilters(actualites, {
+    getTitle: (item) => item.title,
+    getDate: (item) => item.publishedAt ?? item.createdAt,
+  });
+
+  const videoFilters = useCmsListFilters(videos, {
+    getTitle: (item) => item.title,
+    getDate: (item) => item.publishedAt,
+  });
 
   const handleDeleteActualite = async (item: SerializedActualite) => {
     if (!window.confirm(`Supprimer « ${item.title} » ?`)) return;
@@ -187,20 +204,31 @@ export function ActualitesPage() {
           <TabsTrigger value="videos">Vidéos INP</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="actualites" className="mt-4">
+        <TabsContent value="actualites" className="mt-4 space-y-4">
+          <CmsListFilters
+            search={actuFilters.search}
+            onSearchChange={actuFilters.setSearch}
+            year={actuFilters.year}
+            onYearChange={actuFilters.setYear}
+            years={actuFilters.years}
+            sort={actuFilters.sort}
+            onSortChange={actuFilters.setSort}
+          />
           {loading ? (
             <div className="flex justify-center py-16">
               <Loader2Icon className="size-8 animate-spin text-muted-foreground" />
             </div>
-          ) : actualites.length === 0 ? (
+          ) : actuFilters.filtered.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center text-sm text-muted-foreground">
-                Aucune actualité pour le moment.
+                {actualites.length === 0
+                  ? "Aucune actualité pour le moment."
+                  : "Aucune actualité ne correspond aux filtres."}
               </CardContent>
             </Card>
           ) : (
             <div className="grid gap-4">
-              {actualites.map((item) => (
+              {actuFilters.filtered.map((item) => (
                 <Card key={item._id}>
                   <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
                     <div className="relative h-20 w-32 shrink-0 overflow-hidden rounded-md bg-muted">
@@ -265,21 +293,51 @@ export function ActualitesPage() {
           )}
         </TabsContent>
 
-        <TabsContent value="videos" className="mt-4">
+        <TabsContent value="videos" className="mt-4 space-y-4">
+          <CmsListFilters
+            search={videoFilters.search}
+            onSearchChange={videoFilters.setSearch}
+            year={videoFilters.year}
+            onYearChange={videoFilters.setYear}
+            years={videoFilters.years}
+            sort={videoFilters.sort}
+            onSortChange={videoFilters.setSort}
+          />
           {loading ? (
             <div className="flex justify-center py-16">
               <Loader2Icon className="size-8 animate-spin text-muted-foreground" />
             </div>
-          ) : videos.length === 0 ? (
+          ) : videoFilters.filtered.length === 0 ? (
             <Card>
               <CardContent className="py-12 text-center text-sm text-muted-foreground">
-                Aucune vidéo pour le moment.
+                {videos.length === 0
+                  ? "Aucune vidéo pour le moment."
+                  : "Aucune vidéo ne correspond aux filtres."}
               </CardContent>
             </Card>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2">
-              {videos.map((item) => (
-                <Card key={item._id}>
+              {videoFilters.filtered.map((item) => (
+                <Card key={item._id} className="overflow-hidden">
+                  <div className="relative aspect-video w-full bg-muted">
+                    {isDirectVideoFile(item.embedUrl) ? (
+                      <video
+                        src={item.embedUrl}
+                        controls
+                        preload="metadata"
+                        className="absolute inset-0 h-full w-full"
+                      />
+                    ) : (
+                      <iframe
+                        src={item.embedUrl}
+                        title={item.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        loading="lazy"
+                        className="absolute inset-0 h-full w-full"
+                      />
+                    )}
+                  </div>
                   <CardHeader className="pb-2">
                     <div className="flex items-start justify-between gap-2">
                       <CardTitle className="text-base">{item.title}</CardTitle>
@@ -288,8 +346,10 @@ export function ActualitesPage() {
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex flex-wrap gap-2">
-                      <Badge variant="outline" className="capitalize">
-                        {item.platform}
+                      <Badge variant="outline">
+                        {CMS_VIDEO_PLATFORM_LABELS[
+                          item.platform as CmsVideoPlatform
+                        ] ?? item.platform}
                       </Badge>
                       <Badge
                         className={cn(

@@ -70,7 +70,7 @@ export function InstitutMegaMenu({ open, onClose }: InstitutMegaMenuProps) {
                       href={item.href}
                       onClick={onClose}
                       className={`
-                        group relative block w-full px-6 py-4 text-[14px] font-medium transition-all duration-500 rounded-xl border
+                        group relative block w-full px-6 py-4 text-[14px] font-semibold transition-all duration-500 rounded-xl border
                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--inp-vert)] focus-visible:ring-offset-2
                         hover:bg-gradient-to-r hover:from-[#4A2F1A] hover:to-[#8b5e3c] hover:text-white hover:shadow-xl hover:scale-[1.02] hover:border-transparent
                         after:absolute after:inset-0 after:rounded-xl after:bg-white/5 after:opacity-0 hover:after:opacity-100 after:transition-opacity after:pointer-events-none after:content-['']

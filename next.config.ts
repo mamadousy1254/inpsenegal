@@ -4,11 +4,7 @@ const nextConfig: NextConfig = {
   
   images: {
     remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "parsefiles.back4app.com",
-        pathname: "/**",
-      },
+    
       {
         protocol: "https",
         hostname: "images.unsplash.com",

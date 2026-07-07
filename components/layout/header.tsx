@@ -38,7 +38,7 @@ export function Header() {
           className="flex items-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md"
           aria-label="INP – Institut national de Pédologie, accueil"
         >
-          <div className="relative h-12 w-12 flex-shrink-0 text-primary">
+          <div className="relative h-12 w-12 shrink-0 text-primary">
             <LogoSvg className="h-12 w-12" />
           </div>
           <span className="font-semibold text-primary text-lg hidden sm:inline">

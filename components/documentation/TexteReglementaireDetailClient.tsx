@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Eye, ArrowLeft, FileText } from "lucide-react";
+import { FlagStar } from "@/components/FlagStar";
 import { DocumentationDownloadLink } from "@/components/documentation/DocumentationDownloadLink";
 import { getDocumentationViewHref, hasDocumentationFile } from "@/lib/services/documentation/documentation-download";
 import type { SerializedDocumentationResource } from "@/lib/services/documentation/serialize-documentation-resource";
@@ -36,14 +37,17 @@ export function TexteReglementaireDetailClient({
             {doc.title}
           </h1>
 
-          <span
-            className="mx-auto mt-5 block h-[3px] w-24 rounded-full sm:w-32"
-            style={{
-              background:
-                "linear-gradient(90deg, #00853F 0%, #00853F 33%, #FDEF42 33%, #FDEF42 66%, #E31B23 66%, #E31B23 100%)",
-            }}
-            aria-hidden
-          />
+          <span className="relative mx-auto mt-5 block w-24 sm:w-32">
+            <span
+              className="block h-[3px] w-full rounded-full"
+              style={{
+                background:
+                  "linear-gradient(90deg, #00853F 0%, #00853F 33%, #FDEF42 33%, #FDEF42 66%, #E31B23 66%, #E31B23 100%)",
+              }}
+              aria-hidden
+            />
+            <FlagStar size={14} />
+          </span>
 
           <p className="mx-auto mt-5 max-w-2xl text-base text-white/75 sm:text-lg">
             {doc.description}
@@ -51,11 +55,11 @@ export function TexteReglementaireDetailClient({
         </div>
       </section>
 
-      <section className="py-6 bg-gray-50 border-b border-green-100">
+      <section className="py-6 bg-gray-50 border-b border-[#EADFC9]">
         <div className="max-w-5xl mx-auto px-6">
           <Link
             href="/documentation/textes-reglementaires"
-            className="inline-flex items-center gap-2 text-sm text-green-800 hover:text-green-600 transition font-medium"
+            className="inline-flex items-center gap-2 text-sm text-[#7B4F2A] hover:text-[#8B5E3C] transition font-medium"
           >
             <ArrowLeft className="h-4 w-4" />
             Retour aux textes réglementaires
@@ -65,37 +69,37 @@ export function TexteReglementaireDetailClient({
 
       <section className="py-20">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="rounded-2xl shadow-xl border border-green-100 overflow-hidden">
-            <div className="h-1.5 bg-gradient-to-r from-[#0f3d2e] via-[#1f5c3f] to-[#8b5e3c]" />
+          <div className="rounded-2xl shadow-xl border border-[#EADFC9] overflow-hidden">
+            <div className="h-1.5 bg-gradient-to-r from-[#5E3D20] via-[#8A5E38] to-[#8b5e3c]" />
 
             <div className="bg-white p-10">
               <div className="grid md:grid-cols-2 gap-10">
                 <div>
-                  <h2 className="text-xl font-semibold text-green-900 mb-6">
+                  <h2 className="text-xl font-semibold text-[#5E3D20] mb-6">
                     Informations du document
                   </h2>
 
                   <div className="space-y-4 text-gray-700">
                     <div className="flex items-start gap-3">
-                      <span className="font-semibold text-green-800 min-w-[100px]">Type :</span>
+                      <span className="font-semibold text-[#7B4F2A] min-w-[100px]">Type :</span>
                       <span>{doc.legalType ?? "—"}</span>
                     </div>
                     <div className="flex items-start gap-3">
-                      <span className="font-semibold text-green-800 min-w-[100px]">Date :</span>
+                      <span className="font-semibold text-[#7B4F2A] min-w-[100px]">Date :</span>
                       <span>{doc.legalDate ?? doc.year}</span>
                     </div>
                     <div className="flex items-start gap-3">
-                      <span className="font-semibold text-green-800 min-w-[100px]">Référence :</span>
+                      <span className="font-semibold text-[#7B4F2A] min-w-[100px]">Référence :</span>
                       <span>{doc.reference ?? "—"}</span>
                     </div>
                     {doc.fileSize && (
                       <div className="flex items-start gap-3">
-                        <span className="font-semibold text-green-800 min-w-[100px]">Taille :</span>
+                        <span className="font-semibold text-[#7B4F2A] min-w-[100px]">Taille :</span>
                         <span>{doc.fileSize}</span>
                       </div>
                     )}
                     <div className="flex items-start gap-3">
-                      <span className="font-semibold text-green-800 min-w-[100px]">Format :</span>
+                      <span className="font-semibold text-[#7B4F2A] min-w-[100px]">Format :</span>
                       <span className="inline-flex items-center gap-1">
                         <FileText className="h-4 w-4 text-red-600" /> PDF
                       </span>
@@ -114,7 +118,7 @@ export function TexteReglementaireDetailClient({
                     <button
                       type="button"
                       onClick={() => setShowPreview((visible) => !visible)}
-                      className="flex items-center justify-center gap-3 px-8 py-4 rounded-full border-2 border-green-700 text-green-900 font-semibold hover:bg-green-50 transition"
+                      className="flex items-center justify-center gap-3 px-8 py-4 rounded-full border-2 border-[#7B4F2A] text-[#5E3D20] font-semibold hover:bg-[#F7F1E6] transition"
                     >
                       <Eye size={20} />
                       {showPreview ? "Masquer l'aperçu" : "Voir le document"}
@@ -130,10 +134,10 @@ export function TexteReglementaireDetailClient({
       {showPreview && hasFile && (
         <section className="pb-24">
           <div className="max-w-6xl mx-auto px-6">
-            <h2 className="text-2xl font-semibold text-green-900 mb-4">Aperçu du document</h2>
-            <div className="w-20 h-1 rounded-full bg-gradient-to-r from-[#0f3d2e] via-[#1f5c3f] to-[#8b5e3c] mb-8" />
+            <h2 className="text-2xl font-semibold text-[#5E3D20] mb-4">Aperçu du document</h2>
+            <div className="w-20 h-1 rounded-full bg-gradient-to-r from-[#5E3D20] via-[#8A5E38] to-[#8b5e3c] mb-8" />
 
-            <div className="rounded-2xl overflow-hidden shadow-2xl border border-green-100 bg-gray-50">
+            <div className="rounded-2xl overflow-hidden shadow-2xl border border-[#EADFC9] bg-gray-50">
               <iframe
                 title={doc.title}
                 src={getDocumentationViewHref(doc)}

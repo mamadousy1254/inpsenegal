@@ -40,19 +40,19 @@ export function Hero3D() {
         <div
           className="absolute inset-0 opacity-95"
           style={{
-            background: `linear-gradient(165deg, rgba(31, 61, 43, 0.06) 0%, rgba(216, 195, 165, 0.08) 40%, rgba(245, 245, 245, 1) 100%)`,
+            background: `linear-gradient(165deg, rgba(123, 79, 42, 0.06) 0%, rgba(216, 195, 165, 0.08) 40%, rgba(245, 245, 245, 1) 100%)`,
           }}
         />
         <div
           className="absolute inset-0 opacity-[0.07]"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='%231F3D2B' fill-rule='evenodd'/%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='%237B4F2A' fill-rule='evenodd'/%3E%3C/svg%3E")`,
           }}
         />
         <div
           className="absolute inset-0 opacity-[0.06]"
           style={{
-            backgroundImage: `linear-gradient(rgba(31,61,43,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(31,61,43,0.3) 1px, transparent 1px)`,
+            backgroundImage: `linear-gradient(rgba(123,79,42,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(123,79,42,0.3) 1px, transparent 1px)`,
             backgroundSize: "56px 56px",
           }}
         />

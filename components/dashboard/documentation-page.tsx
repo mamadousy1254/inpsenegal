@@ -16,6 +16,10 @@ import {
 import { toast } from "sonner";
 
 import { DocumentationFormDialog } from "@/components/dashboard/documentation-form-dialog";
+import {
+  CmsListFilters,
+  useCmsListFilters,
+} from "@/components/dashboard/cms-list-filters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -90,6 +94,23 @@ export function DocumentationPage() {
     void fetchItems();
   }, [fetchItems]);
 
+  const {
+    search,
+    setSearch,
+    year,
+    setYear,
+    sort,
+    setSort,
+    years,
+    filtered,
+  } = useCmsListFilters(items, {
+    getTitle: (item) => item.title,
+    getDate: (item) =>
+      item.publishedAt ??
+      item.createdAt ??
+      (item.year ? `${item.year}-01-01` : undefined),
+  });
+
   const handleDelete = async (item: SerializedDocumentationResource) => {
     if (!window.confirm(`Supprimer « ${item.title} » ?`)) return;
     try {
@@ -148,6 +169,16 @@ export function DocumentationPage() {
         </div>
       </div>
 
+      <CmsListFilters
+        search={search}
+        onSearchChange={setSearch}
+        year={year}
+        onYearChange={setYear}
+        years={years}
+        sort={sort}
+        onSortChange={setSort}
+      />
+
       <Tabs
         value={activeRubrique}
         onValueChange={(v) => setActiveRubrique(v as DocumentationRubrique)}
@@ -179,15 +210,17 @@ export function DocumentationPage() {
               <div className="flex justify-center py-16">
                 <Loader2Icon className="size-8 animate-spin text-muted-foreground" />
               </div>
-            ) : items.length === 0 ? (
+            ) : filtered.length === 0 ? (
               <Card>
                 <CardContent className="py-12 text-center text-sm text-muted-foreground">
-                  Aucune ressource dans cette rubrique.
+                  {items.length === 0
+                    ? "Aucune ressource dans cette rubrique."
+                    : "Aucune ressource ne correspond aux filtres."}
                 </CardContent>
               </Card>
             ) : (
               <div className="grid gap-3">
-                {items.map((item) => (
+                {filtered.map((item) => (
                   <Card key={item._id}>
                     <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
                       <div className="min-w-0 flex-1 space-y-2">

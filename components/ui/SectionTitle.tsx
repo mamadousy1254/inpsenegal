@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { FlagStar } from "@/components/FlagStar";
 
 /* ------------------------------------------------------------------ */
 /*  Reusable animated section title with underline                     */
@@ -74,22 +75,26 @@ export function SectionTitle({
           {children}
         </Tag>
 
-        {/* Animated underline — Senegal flag colors + shimmer */}
-        <motion.span
-          className="mt-3 block h-[3px] rounded-full relative overflow-hidden section-title-line"
-          style={{
-            background: "linear-gradient(90deg, #00853F 0%, #00853F 33%, #FDEF42 33%, #FDEF42 66%, #E31B23 66%, #E31B23 100%)",
-            originX: centered ? 0.5 : 0,
-          } as React.CSSProperties}
-          initial={{ scaleX: 0 }}
-          whileInView={{ scaleX: 1 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
-          aria-hidden
-        >
-          {/* Shimmer sweep */}
-          <span className="section-title-shimmer" aria-hidden />
-        </motion.span>
+        {/* Animated underline — Senegal flag colors + shimmer + étoile */}
+        <span className="relative mt-3 block">
+          <motion.span
+            className="block h-[3px] rounded-full relative overflow-hidden section-title-line"
+            style={{
+              background: "linear-gradient(90deg, #00853F 0%, #00853F 33%, #FDEF42 33%, #FDEF42 66%, #E31B23 66%, #E31B23 100%)",
+              originX: centered ? 0.5 : 0,
+            } as React.CSSProperties}
+            initial={{ scaleX: 0 }}
+            whileInView={{ scaleX: 1 }}
+            viewport={{ once: true, margin: "-80px" }}
+            transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
+            aria-hidden
+          >
+            {/* Shimmer sweep */}
+            <span className="section-title-shimmer" aria-hidden />
+          </motion.span>
+          {/* Étoile verte du drapeau, centrée sur la bande jaune */}
+          <FlagStar size={13} />
+        </span>
       </motion.div>
 
       {/* Subtitle */}

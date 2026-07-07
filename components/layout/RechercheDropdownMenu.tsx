@@ -70,7 +70,7 @@ export function RechercheDropdownMenu({ open, onClose }: RechercheDropdownMenuPr
                                             href={item.href}
                                             onClick={onClose}
                                             className={`
-                        group relative block w-full px-4 py-3 text-[14px] font-medium transition-all duration-300 rounded-lg border
+                        group relative block w-full px-4 py-3 text-[14px] font-semibold transition-all duration-300 rounded-lg border
                         focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--inp-vert)] focus-visible:ring-offset-2
                         hover:bg-gradient-to-r hover:from-[#4A2F1A] hover:to-[#8b5e3c] hover:text-white hover:shadow-md hover:border-transparent
                         before:absolute before:left-0 before:top-0 before:h-full before:w-1 before:rounded-l-lg before:bg-amber-700 before:transition-transform before:duration-300 before:content-[''] before:z-10

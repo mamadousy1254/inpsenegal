@@ -3,10 +3,14 @@ import ActualiteModel from "@/lib/mongo/models/actualite.model";
 import CmsVideoModel from "@/lib/mongo/models/cms-video.model";
 import PublicationModel from "@/lib/mongo/models/publication.model";
 import MediathequeItemModel from "@/lib/mongo/models/mediatheque-item.model";
+import ResearchAxisModel from "@/lib/mongo/models/research-axis.model";
+import ResearchProjectModel from "@/lib/mongo/models/research-project.model";
 import {
   serializeActualite,
   toNewsItem,
 } from "@/lib/services/cms/serialize-actualite";
+import { serializeResearchAxis } from "@/lib/services/cms/serialize-research-axis";
+import { serializeResearchProject } from "@/lib/services/cms/serialize-research-project";
 import {
   serializePublication,
   toPublicationItem,
@@ -63,6 +67,36 @@ export async function getPublishedVideos(limit?: number) {
     status: doc.status,
     publishedAt: doc.publishedAt?.toISOString(),
   }));
+}
+
+export async function getPublishedResearchAxes(limit?: number) {
+  await connectDB();
+
+  const query = ResearchAxisModel.find({ status: "publie" }).sort({
+    order: 1,
+    publishedAt: -1,
+    createdAt: -1,
+  });
+
+  if (limit) query.limit(limit);
+
+  const docs = await query.lean();
+  return docs.map((doc) => serializeResearchAxis(doc));
+}
+
+export async function getPublishedResearchProjects(limit?: number) {
+  await connectDB();
+
+  const query = ResearchProjectModel.find({ status: "publie" }).sort({
+    order: 1,
+    publishedAt: -1,
+    createdAt: -1,
+  });
+
+  if (limit) query.limit(limit);
+
+  const docs = await query.lean();
+  return docs.map((doc) => serializeResearchProject(doc));
 }
 
 export async function getPublishedScientificPublications(limit?: number) {

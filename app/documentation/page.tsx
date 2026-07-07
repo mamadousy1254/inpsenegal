@@ -80,10 +80,10 @@ export default async function DocumentationPage() {
 
       <section className="py-24">
         <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-3xl font-semibold text-green-900 mb-4 text-center">
+          <h2 className="text-3xl font-semibold text-[#5E3D20] mb-4 text-center">
             Nos ressources documentaires
           </h2>
-          <div className="w-20 h-1 mx-auto rounded-full bg-gradient-to-r from-[#0f3d2e] via-[#1f5c3f] to-[#8b5e3c] mb-16" />
+          <div className="w-20 h-1 mx-auto rounded-full bg-gradient-to-r from-[#5E3D20] via-[#8A5E38] to-[#8b5e3c] mb-16" />
 
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8">
             {sections.map((section) => {
@@ -94,21 +94,21 @@ export default async function DocumentationPage() {
                 <Link
                   key={section.href}
                   href={section.href}
-                  className="group rounded-2xl border border-green-100 bg-white shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
+                  className="group rounded-2xl border border-[#EADFC9] bg-white shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden"
                 >
-                  <div className="h-1.5 bg-gradient-to-r from-[#0f3d2e] via-[#1f5c3f] to-[#8b5e3c]" />
+                  <div className="h-1.5 bg-gradient-to-r from-[#5E3D20] via-[#8A5E38] to-[#8b5e3c]" />
                   <div className="p-8 space-y-4">
                     <div className="flex items-center justify-between">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-50 border border-green-100 group-hover:bg-green-100 transition">
-                        <Icon className="h-6 w-6 text-green-700" />
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F7F1E6] border border-[#EADFC9] group-hover:bg-[#EADFC9] transition">
+                        <Icon className="h-6 w-6 text-[#7B4F2A]" />
                       </div>
                       {count !== null && (
-                        <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">
+                        <span className="rounded-full bg-[#EADFC9] px-3 py-1 text-xs font-semibold text-[#7B4F2A]">
                           {count} publié{count > 1 ? "s" : ""}
                         </span>
                       )}
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-800 group-hover:text-green-900 transition">
+                    <h3 className="text-lg font-semibold text-gray-800 group-hover:text-[#5E3D20] transition">
                       {section.title}
                     </h3>
                     <p className="text-gray-600 text-sm leading-relaxed">
@@ -122,7 +122,7 @@ export default async function DocumentationPage() {
         </div>
       </section>
 
-      <section className="py-24 bg-gradient-to-r from-[#0f3d2e] via-[#1f5c3f] to-[#8b5e3c] text-white text-center">
+      <section className="py-24 bg-gradient-to-r from-[#5E3D20] via-[#8A5E38] to-[#8b5e3c] text-white text-center">
         <div className="max-w-3xl mx-auto px-6">
           <h2 className="text-3xl font-semibold mb-6">
             Besoin d&apos;un document spécifique ?
@@ -133,7 +133,7 @@ export default async function DocumentationPage() {
           </p>
           <Link
             href="/contact"
-            className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-green-900 font-semibold hover:bg-gray-100 transition shadow-lg"
+            className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-white text-[#5E3D20] font-semibold hover:bg-gray-100 transition shadow-lg"
           >
             Faire une demande
           </Link>

@@ -35,7 +35,7 @@ import {
 const chartConfig = {
   absences: {
     label: "Absences",
-    color: "#1F3D2B",
+    color: "#7B4F2A",
   },
   convocations: {
     label: "Convocations",
@@ -127,8 +127,8 @@ export function ChartAreaInteractive({ data }: ChartAreaInteractiveProps) {
           <AreaChart data={filteredData}>
             <defs>
               <linearGradient id="fillAbsences" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#1F3D2B" stopOpacity={0.55} />
-                <stop offset="95%" stopColor="#1F3D2B" stopOpacity={0.05} />
+                <stop offset="5%" stopColor="#7B4F2A" stopOpacity={0.55} />
+                <stop offset="95%" stopColor="#7B4F2A" stopOpacity={0.05} />
               </linearGradient>
               <linearGradient id="fillConvocations" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#0ea5e9" stopOpacity={0.5} />
@@ -174,7 +174,7 @@ export function ChartAreaInteractive({ data }: ChartAreaInteractiveProps) {
               dataKey="absences"
               type="monotone"
               fill="url(#fillAbsences)"
-              stroke="#1F3D2B"
+              stroke="#7B4F2A"
               strokeWidth={2}
             />
             <Area

@@ -61,7 +61,7 @@ export function DocumentationDownloadLink({
       download={download.fileName}
       className={cn(
         baseButtonClass,
-        "bg-gradient-to-r from-[#0f3d2e] via-[#1f5c3f] to-[#8b5e3c] text-white transition hover:brightness-110",
+        "bg-gradient-to-r from-[#5E3D20] via-[#8A5E38] to-[#8b5e3c] text-white transition hover:brightness-110",
         fullWidth && "w-full justify-center",
         className,
       )}

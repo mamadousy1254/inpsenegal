@@ -6,6 +6,8 @@ import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { format, isValid, parse } from "date-fns";
+import { fr } from "date-fns/locale";
 import {
   AtSignIcon,
   AwardIcon,
@@ -38,8 +40,14 @@ import {
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -382,6 +390,78 @@ function SelectTriggerWithIcon({
   );
 }
 
+function DateField({
+  id,
+  value,
+  onChange,
+  icon: Icon,
+  iconClassName,
+  placeholder = "Sélectionner une date",
+  fromYear = 1940,
+  toYear = new Date().getFullYear(),
+  defaultYear,
+}: {
+  id?: string;
+  value?: string;
+  onChange: (value: string) => void;
+  icon: LucideIcon;
+  iconClassName?: string;
+  placeholder?: string;
+  fromYear?: number;
+  toYear?: number;
+  defaultYear?: number;
+}) {
+  const [open, setOpen] = useState(false);
+
+  const parsed = value ? parse(value, "yyyy-MM-dd", new Date()) : undefined;
+  const selectedDate = parsed && isValid(parsed) ? parsed : undefined;
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger
+        render={
+          <Button
+            type="button"
+            variant="outline"
+            id={id}
+            className={cn(
+              "relative w-full justify-start pl-9 font-normal",
+              !selectedDate && "text-muted-foreground",
+            )}
+          />
+        }
+      >
+        <Icon
+          className={cn(
+            "pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2",
+            iconClassName ?? "text-muted-foreground",
+          )}
+        />
+        {selectedDate
+          ? format(selectedDate, "d MMMM yyyy", { locale: fr })
+          : placeholder}
+      </PopoverTrigger>
+      <PopoverContent className="w-auto p-0" align="start">
+        <Calendar
+          mode="single"
+          selected={selectedDate}
+          onSelect={(date) => {
+            onChange(date ? format(date, "yyyy-MM-dd") : "");
+            setOpen(false);
+          }}
+          captionLayout="dropdown"
+          startMonth={new Date(fromYear, 0)}
+          endMonth={new Date(toYear, 11)}
+          defaultMonth={
+            selectedDate ?? new Date(defaultYear ?? toYear - 25, 0)
+          }
+          autoFocus
+        />
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export function AddUserSheet() {
   const router = useRouter();
   const { data: session } = useSession();
@@ -407,9 +487,12 @@ export function AddUserSheet() {
   const gender = watch("gender");
   const maritalStatus = watch("maritalStatus");
   const contractType = watch("contractType");
+  const dateOfBirth = watch("dateOfBirth");
+  const hireDate = watch("hireDate");
+  const endDate = watch("endDate");
 
   const canAdd = session?.user?.role
-    ? canManageUsers(session.user.role as UserRole)
+    ? canManageUsers(session.user.role)
     : false;
 
   if (!canAdd) return null;
@@ -479,7 +562,7 @@ export function AddUserSheet() {
       </SheetTrigger>
       <SheetContent
         side="right"
-        className="flex w-full flex-col overflow-y-auto sm:max-w-lg"
+        className="flex w-full flex-col overflow-y-auto data-[side=right]:sm:max-w-xl data-[side=right]:lg:max-w-3xl data-[side=right]:xl:max-w-4xl"
       >
         <SheetHeader>
           <SheetTitle>Nouvel utilisateur</SheetTitle>
@@ -844,12 +927,16 @@ export function AddUserSheet() {
                   <FieldLabel htmlFor="dateOfBirth" optional>
                     Date de naissance
                   </FieldLabel>
-                  <IconInput
+                  <DateField
                     id="dateOfBirth"
-                    type="date"
+                    value={dateOfBirth}
+                    onChange={(v) => setValue("dateOfBirth", v)}
                     icon={CalendarIcon}
                     iconClassName="text-cyan-600"
-                    {...register("dateOfBirth")}
+                    placeholder="Choisir une date"
+                    fromYear={1940}
+                    toYear={new Date().getFullYear()}
+                    defaultYear={1990}
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -986,26 +1073,34 @@ export function AddUserSheet() {
                   <FieldLabel htmlFor="hireDate">
                     Date d&apos;embauche
                   </FieldLabel>
-                  <IconInput
+                  <DateField
                     id="hireDate"
-                    type="date"
+                    value={hireDate}
+                    onChange={(v) => setValue("hireDate", v)}
                     icon={CalendarPlusIcon}
                     iconClassName="text-emerald-600"
-                    {...register("hireDate")}
+                    placeholder="Choisir une date"
+                    fromYear={1990}
+                    toYear={new Date().getFullYear() + 1}
+                    defaultYear={new Date().getFullYear()}
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <FieldLabel htmlFor="endDate" optional>
+                {/* <FieldLabel htmlFor="endDate" optional>
                   Fin de contrat (CDD — laisser vide = 31 déc. de l&apos;année)
-                </FieldLabel>
-                <IconInput
+                </FieldLabel> */}
+                <DateField
                   id="endDate"
-                  type="date"
+                  value={endDate}
+                  onChange={(v) => setValue("endDate", v)}
                   icon={CalendarOffIcon}
                   iconClassName="text-rose-600"
-                  {...register("endDate")}
+                  placeholder="Choisir une date"
+                  fromYear={1990}
+                  toYear={new Date().getFullYear() + 10}
+                  defaultYear={new Date().getFullYear()}
                 />
               </div>
 

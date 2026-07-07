@@ -10,12 +10,15 @@
     "seed:actualites": "npx tsx scripts/seed-actualites.ts",
     "seed:publications": "npx tsx scripts/seed-publications.ts",
     "seed:mediatheque": "npx tsx scripts/seed-mediatheque.ts",
+    "seed:videos": "npx tsx scripts/seed-videos.ts",
+    "seed:recherche": "npx tsx scripts/seed-research-axes.ts",
+    "seed:projets": "npx tsx scripts/seed-research-projects.ts",
     "seed:documentation": "npx tsx scripts/seed-documentation.ts",
     "seed:recrutements": "npx tsx scripts/seed-recrutements.ts",
     "seed:institut": "npx tsx scripts/seed-institut.ts",
     "seed:partenaires": "npx tsx scripts/seed-partenaires.ts",
     "sync:ged-share-indexes": "npx tsx scripts/sync-ged-share-indexes.ts",
-    "seed:cms": "npm run seed:actualites && npm run seed:publications && npm run seed:mediatheque && npm run seed:documentation && npm run seed:recrutements && npm run seed:institut && npm run seed:partenaires"
+    "seed:cms": "npm run seed:actualites && npm run seed:publications && npm run seed:mediatheque && npm run seed:videos && npm run seed:recherche && npm run seed:projets && npm run seed:documentation && npm run seed:recrutements && npm run seed:institut && npm run seed:partenaires"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
@@ -66,5 +69,8 @@
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5"
+  },
+  "optionalDependencies": {
+    "lightningcss-win32-x64-msvc": "^1.30.2"
   }
 }

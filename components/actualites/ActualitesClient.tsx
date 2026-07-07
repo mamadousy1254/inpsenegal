@@ -80,7 +80,7 @@ export function ActualitesClient({ news }: ActualitesClientProps) {
       {featured && (
         <section className="py-16 px-4 sm:py-20" aria-label="Actualité à la une">
           <div className="container mx-auto max-w-6xl">
-            <SectionTitle label="À la une" className="mb-8">
+            <SectionTitle label="À la une" align="center" className="mb-8">
               Actualité mise en avant
             </SectionTitle>
             <ActualiteUne article={featured} />
@@ -93,6 +93,7 @@ export function ActualitesClient({ news }: ActualitesClientProps) {
         <div className="container mx-auto max-w-6xl">
           <SectionTitle
             id="all-actu-title"
+            align="center"
             label="Toutes les actualités"
             subtitle={`${filtered.length} article${filtered.length !== 1 ? "s" : ""}`}
           >

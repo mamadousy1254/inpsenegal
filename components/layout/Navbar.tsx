@@ -80,15 +80,15 @@ export function Navbar() {
       >
         {/* Bottom accent line */}
         <div
-          className="absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-[var(--inp-vert)] via-[var(--inp-beige)] to-[var(--inp-vert)] opacity-30"
+          className="absolute inset-x-0 bottom-0 h-[2px] bg-linear-to-r from-[var(--inp-vert)] via-[var(--inp-beige)] to-[var(--inp-vert)] opacity-30"
           aria-hidden
         />
 
-        <div className="container mx-auto flex h-full max-w-[1400px] items-center justify-between overflow-visible px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto flex h-full max-w-[1536px] items-center justify-between overflow-visible px-4 sm:px-6 lg:px-8">
           {/* ─── Logo ─── */}
           <Link
             href="/"
-            className="group relative mr-8 flex-shrink-0 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--inp-vert)] focus-visible:ring-offset-2 lg:mr-12"
+            className="group relative mr-4 shrink-0 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--inp-vert)] focus-visible:ring-offset-2 lg:mr-8"
             aria-label="INP – Institut national de Pédologie, accueil"
           >
             {/* Halo glow behind logo */}
@@ -96,7 +96,7 @@ export function Navbar() {
               className="pointer-events-none absolute inset-0 -m-2 rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100"
               style={{
                 background:
-                  "radial-gradient(circle, rgba(31,61,43,0.12) 0%, transparent 70%)",
+                  "radial-gradient(circle, rgba(123,79,42,0.12) 0%, transparent 70%)",
               }}
               aria-hidden
             />
@@ -117,15 +117,15 @@ export function Navbar() {
               <Image
                 src="/images/logo-inp.png"
                 alt="Logo INP – Institut national de Pédologie"
-                width={281}
-                height={215}
+                width={100}
+                height={100}
                 priority
                 unoptimized
                 className={cn(
                   "object-contain transition-all duration-300",
                   scrolled
-                    ? "h-10 w-auto sm:h-11"
-                    : "h-11 w-auto sm:h-13 md:h-14"
+                    ? "h-10 w-auto"
+                    : "h-11 w-auto"
                 )}
               />
             </motion.div>
@@ -133,7 +133,7 @@ export function Navbar() {
 
           {/* ─── Desktop Nav ─── */}
           <nav
-            className="hidden xl:flex flex-1 justify-center items-center gap-1"
+            className="hidden 2xl:flex flex-1 justify-center items-center gap-0.5"
             aria-label="Navigation principale"
           >
             {NAV_LINKS.map((link) => {
@@ -230,8 +230,8 @@ export function Navbar() {
               href="/demande-analyse"
               className={cn(
                 "hidden sm:inline-flex items-center gap-1.5 whitespace-nowrap rounded-full font-semibold uppercase text-white shadow-md transition-all duration-300",
-                "bg-[var(--inp-vert)] hover:shadow-lg hover:brightness-110",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--inp-vert)] focus-visible:ring-offset-2",
+                "bg-[var(--inp-marron)] hover:shadow-lg hover:brightness-110",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--inp-marron)] focus-visible:ring-offset-2",
                 scrolled ? "px-3.5 py-1.5 text-[10px]" : "px-4 py-2 text-[11px]"
               )}
             >
@@ -241,7 +241,7 @@ export function Navbar() {
 
             {/* Mobile burger */}
             <button
-              className="xl:hidden flex h-10 w-10 items-center justify-center rounded-lg text-foreground/70 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--inp-vert)]"
+              className="2xl:hidden flex h-10 w-10 items-center justify-center rounded-lg text-foreground/70 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--inp-vert)]"
               onClick={() => setMobileOpen(true)}
               aria-expanded={mobileOpen}
               aria-controls="mobile-menu"

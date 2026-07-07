@@ -76,7 +76,7 @@ export function DirectorMessage({ director }: DirectorMessageProps) {
                 className="absolute -inset-3 rounded-2xl opacity-60"
                 style={{
                   background:
-                    "linear-gradient(135deg, var(--inp-beige) 0%, transparent 50%, var(--inp-vert) 100%)",
+                    "linear-gradient(135deg, var(--inp-beige) 0%, transparent 50%, #7B4F2A 100%)",
                 }}
                 aria-hidden
               />
@@ -97,13 +97,13 @@ export function DirectorMessage({ director }: DirectorMessageProps) {
                     className="absolute inset-x-0 bottom-0 h-1/4 pointer-events-none"
                     style={{
                       background:
-                        "linear-gradient(to top, rgba(31,61,43,0.12), transparent)",
+                        "linear-gradient(to top, rgba(123,79,42,0.12), transparent)",
                     }}
                     aria-hidden
                   />
                 </div>
                 {/* Name plate beneath photo */}
-                <div className="mt-2 rounded-lg bg-[var(--inp-vert)] px-4 py-3 text-center">
+                <div className="mt-2 rounded-lg bg-[#7B4F2A] px-4 py-3 text-center">
                   <p className="text-sm font-semibold text-white tracking-wide">
                     {data.fullName}
                   </p>

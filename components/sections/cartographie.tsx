@@ -27,6 +27,10 @@ export function Cartographie() {
       aria-labelledby="cartographie-title"
     >
       <div className="container mx-auto max-w-6xl">
+        <SectionTitle id="cartographie-title" align="center" className="mb-12">
+          Cartographie des sols
+        </SectionTitle>
+
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -36,10 +40,7 @@ export function Cartographie() {
         >
           {/* Left — text + stats */}
           <div className="lg:w-1/2">
-            <SectionTitle id="cartographie-title">
-              Cartographie des sols
-            </SectionTitle>
-            <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
+            <p className="text-[15px] leading-relaxed text-muted-foreground">
               Accédez à la carte pédologique du Sénégal et aux données
               d&apos;inventaire des sols. Une couverture nationale au service
               de l&apos;aménagement du territoire et de l&apos;agriculture
@@ -90,7 +91,7 @@ export function Cartographie() {
                 height={600}
                 className="w-full h-auto rounded-xl object-contain"
                 loading="lazy"
-                quality={90}
+                quality={75}
               />
               {/* Badge label */}
               <div className="absolute bottom-6 right-6 flex items-center gap-1.5 rounded-full bg-white/80 backdrop-blur-sm border border-border/40 px-3 py-1.5 shadow-sm">

@@ -189,6 +189,7 @@ export function Mediatheque({ gallery }: { gallery: GalleryImage[] }) {
         <div className="container mx-auto max-w-7xl min-w-0">
           <SectionTitle
             id="mediatheque-title"
+            align="center"
             subtitle="L'INP en images — Activités, missions de terrain et événements officiels."
           >
             Médiathèque
@@ -264,7 +265,7 @@ export function Mediatheque({ gallery }: { gallery: GalleryImage[] }) {
                       />
 
                       {/* Hover overlay */}
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#1F3D2B]/55 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#7B4F2A]/55 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                         <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 shadow-lg">
                           <Camera className="h-5 w-5 text-[var(--inp-vert)]" />
                         </div>
@@ -298,7 +299,7 @@ export function Mediatheque({ gallery }: { gallery: GalleryImage[] }) {
               href="https://web.facebook.com/gestiondessols/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#1F4D3A] via-[#2F6B4F] to-[#8B5E3C] px-6 py-2.5 text-[13px] font-semibold text-white shadow-md shadow-emerald-900/15 transition-all duration-300 hover:shadow-lg hover:shadow-emerald-900/25 hover:scale-[1.02]"
+              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#5E3D20] via-[#8A5E38] to-[#8B5E3C] px-6 py-2.5 text-[13px] font-semibold text-white shadow-md shadow-amber-900/15 transition-all duration-300 hover:shadow-lg hover:shadow-amber-900/25 hover:scale-[1.02]"
             >
               <svg
                 viewBox="0 0 24 24"

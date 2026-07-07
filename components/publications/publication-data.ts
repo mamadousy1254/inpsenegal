@@ -35,7 +35,7 @@ export const TYPE_LABELS: Record<PublicationType, string> = {
 
 export const TYPE_COLORS: Record<PublicationType, string> = {
   "rapport-technique": "bg-blue-50 text-blue-700 border-blue-200",
-  "article-scientifique": "bg-emerald-50 text-emerald-700 border-emerald-200",
+  "article-scientifique": "bg-[#F7F1E6] text-[#7B4F2A] border-[#DCC8A8]",
   "etude-nationale": "bg-amber-50 text-amber-700 border-amber-200",
   "fiche-technique": "bg-violet-50 text-violet-700 border-violet-200",
 };

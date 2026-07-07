@@ -123,7 +123,9 @@ export function CmsVideoFormDialog({
         <DialogHeader>
           <DialogTitle>{item ? "Modifier la vidéo" : "Nouvelle vidéo INP"}</DialogTitle>
           <DialogDescription>
-            Collez un lien YouTube ou Facebook. L&apos;embed sera généré automatiquement.
+            Collez un lien YouTube, Facebook, Vimeo, Dailymotion, un lien de
+            fichier vidéo (.mp4…) ou tout autre lien. L&apos;intégration est
+            générée automatiquement.
           </DialogDescription>
         </DialogHeader>
 
@@ -139,14 +141,18 @@ export function CmsVideoFormDialog({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="watch-url">Lien YouTube ou Facebook</Label>
+            <Label htmlFor="watch-url">Lien de la vidéo</Label>
             <Input
               id="watch-url"
               value={form.watchUrl}
               onChange={(e) => setForm((prev) => ({ ...prev, watchUrl: e.target.value }))}
-              placeholder="https://www.youtube.com/watch?v=..."
+              placeholder="https://www.youtube.com/watch?v=... ou https://vimeo.com/... ou un lien .mp4"
               required
             />
+            <p className="text-xs text-muted-foreground">
+              YouTube, Facebook, Vimeo, Dailymotion, fichier vidéo direct ou
+              autre lien.
+            </p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">

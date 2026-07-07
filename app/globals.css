@@ -6,14 +6,22 @@
 
 /* INP – Identité visuelle */
 :root {
-  /* Couleurs principales */
-  --inp-vert: #1F3D2B;
+  /* Polices — piles système (plus de dépendance à next/font/google ni à
+     fonts.gstatic.com au build). Ces variables alimentent --font-sans/mono/serif. */
+  --font-geist-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-geist-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+  --font-lora: Georgia, Cambria, "Times New Roman", Times, serif;
+  /* Couleurs principales — charte INP validée (Vercel) : ton DOMINANT brun terre.
+     `--inp-vert` conserve son nom pour compatibilité mais vaut désormais le brun
+     (#7B4F2A) → plus aucun vert résiduel sur le site. Le drapeau du Sénégal
+     (vert #00853F / jaune / rouge) est géré à part et reste inchangé. */
+  --inp-vert: #7B4F2A;
   --inp-beige: #D8C3A5;
   --inp-marron: #8B5E3C;
   --inp-gris: #6b7280;
   --inp-blanc: #ffffff;
-  /* Sémantiques */
-  --primary: oklch(0.205 0 0);
+  /* Sémantiques — couleur primaire = brun terre (titres, boutons, accents) */
+  --primary: var(--inp-vert);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -94,12 +102,12 @@
   --color-border: var(--border);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
-  /* INP palette */
-  --color-inp-vert: #1F3D2B;
+  /* INP palette (brun terre — ex-vert, renommage conservé pour compat.) */
+  --color-inp-vert: #7B4F2A;
   --color-inp-beige: #D8C3A5;
   --color-inp-marron: #8B5E3C;
   --color-inp-gris: #6b7280;
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
   --font-serif: var(--font-lora), Georgia, "Times New Roman", serif;
   --font-heading: var(--font-sans);
@@ -131,18 +139,88 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Typographie des articles d'actualité (contenu HTML CMS/demo) — charte INP */
+.prose-inp {
+  font-size: 1rem;
+  line-height: 1.75;
+}
+.prose-inp h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #7B4F2A;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #C9A574;
+}
+.prose-inp h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2A1F18;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+.prose-inp p {
+  margin-bottom: 1rem;
+}
+.prose-inp ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+.prose-inp ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+.prose-inp li {
+  margin-bottom: 0.5rem;
+  padding-left: 0.25rem;
+}
+.prose-inp li::marker {
+  color: #C9A574;
+}
+.prose-inp blockquote {
+  border-left: 4px solid #C9A574;
+  background-color: #F8F1E0;
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+  color: #5A4733;
+  border-radius: 0.5rem;
+}
+.prose-inp blockquote cite {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 600;
+  color: #7B4F2A;
+}
+.prose-inp strong {
+  color: #2A1F18;
+  font-weight: 700;
+}
+.prose-inp a {
+  color: #7B4F2A;
+  text-decoration: underline;
+}
+.prose-inp a:hover {
+  color: #4A2F1A;
+}
+
 /* Texture subtile fond hero */
 .hero-texture {
   background-image:
-    linear-gradient(180deg, rgba(31, 61, 43, 0.03) 0%, transparent 50%),
-    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='%231F3D2B' fill-opacity='0.02' fill-rule='evenodd'/%3E%3C/svg%3E");
+    linear-gradient(180deg, rgba(123, 79, 42, 0.03) 0%, transparent 50%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='%237B4F2A' fill-opacity='0.02' fill-rule='evenodd'/%3E%3C/svg%3E");
 }
 
 /* Texture géométrique légère (ex. Mot du Directeur) */
 .section-texture {
   background-image:
-    linear-gradient(180deg, rgba(31, 61, 43, 0.02) 0%, transparent 40%),
-    url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0L40 20L20 40L0 20z' fill='%231F3D2B' fill-opacity='0.015' fill-rule='evenodd'/%3E%3Cpath d='M0 20h40M20 0v40' stroke='%231F3D2B' stroke-opacity='0.03' stroke-width='0.5'/%3E%3C/svg%3E");
+    linear-gradient(180deg, rgba(123, 79, 42, 0.02) 0%, transparent 40%),
+    url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 0L40 20L20 40L0 20z' fill='%237B4F2A' fill-opacity='0.015' fill-rule='evenodd'/%3E%3Cpath d='M0 20h40M20 0v40' stroke='%237B4F2A' stroke-opacity='0.03' stroke-width='0.5'/%3E%3C/svg%3E");
 }
 
 body {
@@ -157,11 +235,11 @@ body {
   .hero-3d-title:hover {
     background: linear-gradient(
       90deg,
-      #1F3D2B 0%,
-      #1F3D2B 35%,
-      #2d4a38 50%,
-      #1F3D2B 65%,
-      #1F3D2B 100%
+      #7B4F2A 0%,
+      #7B4F2A 35%,
+      #9a6a3a 50%,
+      #7B4F2A 65%,
+      #7B4F2A 100%
     );
     background-size: 220% 100%;
     background-clip: text;
@@ -172,11 +250,11 @@ body {
   .hero-title-sweep {
     background: linear-gradient(
       90deg,
-      #1F3D2B 0%,
-      #1F3D2B 38%,
-      #2d4a38 50%,
-      #1F3D2B 62%,
-      #1F3D2B 100%
+      #7B4F2A 0%,
+      #7B4F2A 38%,
+      #9a6a3a 50%,
+      #7B4F2A 62%,
+      #7B4F2A 100%
     );
     background-size: 220% 100%;
     background-clip: text;
@@ -297,6 +375,25 @@ body {
   }
 }
 
+/* ---- Partenaires : marquee « Ils nous font confiance » ----
+   La piste triple la liste ; translater d'un tiers = une boucle parfaite. */
+@keyframes partners-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-33.333%);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .partners-marquee-track {
+    animation: partners-marquee 45s linear infinite;
+  }
+}
+.partners-marquee-container:hover .partners-marquee-track {
+  animation-play-state: paused;
+}
+
 /* ---- Footer: tricolor border animations ---- */
 @keyframes footer-tricolor-shift {
   0% {
@@ -343,8 +440,8 @@ body {
   border: 1px solid rgba(216, 195, 165, 0.12) !important;
   background:
     radial-gradient(ellipse 120% 80% at 100% -20%, rgba(216, 195, 165, 0.14), transparent 55%),
-    radial-gradient(ellipse 90% 60% at -10% 100%, rgba(31, 61, 43, 0.9), transparent 50%),
-    linear-gradient(175deg, #0a1510 0%, #14261c 38%, #1a3326 68%, #122018 100%) !important;
+    radial-gradient(ellipse 90% 60% at -10% 100%, rgba(123, 79, 42, 0.9), transparent 50%),
+    linear-gradient(175deg, #150f09 0%, #241a13 38%, #322619 68%, #1f1811 100%) !important;
   box-shadow:
     0 24px 48px -12px rgba(0, 0, 0, 0.45),
     0 0 0 1px rgba(255, 255, 255, 0.04) inset;

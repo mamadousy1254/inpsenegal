@@ -52,7 +52,7 @@ export function MotDirecteurContent({ director }: MotDirecteurContentProps) {
         <div className="grid gap-14 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-20 lg:items-center">
           {/* Photo */}
           <motion.div
-            className="order-2 lg:order-1 flex justify-center"
+            className="order-1 lg:order-1 flex justify-center"
             initial={{ opacity: 0, x: -32 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, ease: "easeOut" }}
@@ -89,7 +89,7 @@ export function MotDirecteurContent({ director }: MotDirecteurContentProps) {
           </motion.div>
 
           {/* Texte */}
-          <div className="order-1 lg:order-2 space-y-7">
+          <div className="order-2 lg:order-2 space-y-7">
             <motion.blockquote
               className="relative border-l-4 border-inp-marron py-1 pl-6"
               initial={{ opacity: 0, x: 24 }}

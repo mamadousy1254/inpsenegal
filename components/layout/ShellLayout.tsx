@@ -27,7 +27,7 @@ export function ShellLayout({ children }: { children: React.ReactNode }) {
       <ScrollToTop />
       <AnnouncementBar />
       <Navbar />
-      <main className="flex-1 overflow-x-hidden" id="main-content">
+      <main className="flex-1 overflow-x-clip" id="main-content">
         {children}
       </main>
       <Footer />

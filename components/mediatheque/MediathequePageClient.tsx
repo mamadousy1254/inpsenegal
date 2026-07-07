@@ -21,12 +21,12 @@ export function MediathequePageClient({ photos }: MediathequePageClientProps) {
         subtitle="Découvrez la galerie officielle de l'Institut National de Pédologie : laboratoires, missions de terrain et événements institutionnels."
       />
 
-      <section className="py-12 bg-gradient-to-br from-green-50 via-white to-green-100 border-b border-green-100">
+      <section className="py-12 bg-gradient-to-br from-[#F7F1E6] via-white to-[#EADFC9] border-b border-[#EADFC9]">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <Camera className="h-4 w-4" />
             <span>
-              <span className="font-semibold text-green-800">{photos.length}</span>{" "}
+              <span className="font-semibold text-[#7B4F2A]">{photos.length}</span>{" "}
               photo{photos.length > 1 ? "s" : ""}
             </span>
           </div>
@@ -35,7 +35,7 @@ export function MediathequePageClient({ photos }: MediathequePageClientProps) {
 
       <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-4xl font-semibold text-center text-green-900 mb-4">
+          <h2 className="text-4xl font-semibold text-center text-[#5E3D20] mb-4">
             Galerie photographique
           </h2>
           <div className="w-20 h-1 mx-auto rounded-full bg-[var(--inp-vert)] mb-16" />
@@ -60,7 +60,7 @@ export function MediathequePageClient({ photos }: MediathequePageClientProps) {
                   className="object-cover w-full h-64 group-hover:scale-110 transition-transform duration-700"
                 />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0f3d2e]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#5E3D20]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                 <div className="absolute inset-0 flex flex-col justify-end p-5 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   <p className="text-sm font-semibold leading-snug">{photo.caption}</p>
@@ -109,9 +109,9 @@ export function MediathequePageClient({ photos }: MediathequePageClientProps) {
         </div>
       )}
 
-      <section className="py-24 bg-gradient-to-br from-green-50 via-white to-green-100">
+      <section className="py-24 bg-gradient-to-br from-[#F7F1E6] via-white to-[#EADFC9]">
         <div className="max-w-5xl mx-auto px-6">
-          <h2 className="text-3xl font-semibold text-green-900 mb-4">
+          <h2 className="text-3xl font-semibold text-[#5E3D20] mb-4">
             Droits & Utilisation
           </h2>
           <div className="w-20 h-1 rounded-full bg-[var(--inp-vert)] mb-8" />

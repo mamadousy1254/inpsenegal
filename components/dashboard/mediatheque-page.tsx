@@ -12,6 +12,10 @@ import {
 import { toast } from "sonner";
 
 import { MediathequeFormDialog } from "@/components/dashboard/mediatheque-form-dialog";
+import {
+  CmsListFilters,
+  useCmsListFilters,
+} from "@/components/dashboard/cms-list-filters";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -52,6 +56,20 @@ export function MediathequePage() {
   useEffect(() => {
     void fetchItems();
   }, [fetchItems]);
+
+  const {
+    search,
+    setSearch,
+    year,
+    setYear,
+    sort,
+    setSort,
+    years,
+    filtered,
+  } = useCmsListFilters(items, {
+    getTitle: (item) => `${item.caption ?? ""} ${item.alt ?? ""}`,
+    getDate: (item) => item.publishedAt ?? item.createdAt,
+  });
 
   const handleDelete = async (item: SerializedMediathequeItem) => {
     if (!window.confirm(`Supprimer cette image ?`)) return;
@@ -106,19 +124,32 @@ export function MediathequePage() {
         </div>
       </div>
 
+      <CmsListFilters
+        search={search}
+        onSearchChange={setSearch}
+        year={year}
+        onYearChange={setYear}
+        years={years}
+        sort={sort}
+        onSortChange={setSort}
+        searchPlaceholder="Rechercher par légende…"
+      />
+
       {loading ? (
         <div className="flex justify-center py-16">
           <Loader2Icon className="size-8 animate-spin text-muted-foreground" />
         </div>
-      ) : items.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center text-sm text-muted-foreground">
-            Aucune image pour le moment.
+            {items.length === 0
+              ? "Aucune image pour le moment."
+              : "Aucune image ne correspond aux filtres."}
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((item) => (
+          {filtered.map((item) => (
             <Card key={item._id} className="overflow-hidden">
               <div className="relative aspect-[4/3] bg-muted">
                 <Image

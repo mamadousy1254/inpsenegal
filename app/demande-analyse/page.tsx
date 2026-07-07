@@ -82,14 +82,14 @@ const REQUESTER_TYPES = ANALYSIS_REQUESTER_TYPES;
 /* ------------------------------------------------------------------ */
 
 /* Official INP gradient: deep green → intermediate green → brown earth */
-const INP_GRADIENT = "linear-gradient(135deg, #1F4D3A 0%, #2F6B4F 50%, #8B5E3C 100%)";
+const INP_GRADIENT = "linear-gradient(135deg, #5E3D20 0%, #8A5E38 50%, #8B5E3C 100%)";
 const INP_GRADIENT_SUBTLE = "linear-gradient(135deg, rgba(31,77,58,0.1) 0%, rgba(47,107,79,0.05) 50%, rgba(139,94,60,0.05) 100%)";
 
 const inputBase =
-    "w-full h-12 rounded-xl border border-neutral-200 bg-white px-4 text-sm text-gray-800 placeholder:text-gray-400 transition-all duration-300 focus:border-[#2F6B4F] focus:ring-2 focus:ring-[#2F6B4F]/20 focus:shadow-sm focus:outline-none hover:border-gray-300";
+    "w-full h-12 rounded-xl border border-neutral-200 bg-white px-4 text-sm text-gray-800 placeholder:text-gray-400 transition-all duration-300 focus:border-[#8A5E38] focus:ring-2 focus:ring-[#8A5E38]/20 focus:shadow-sm focus:outline-none hover:border-gray-300";
 
 const selectBase =
-    "w-full h-12 rounded-xl border border-neutral-200 bg-white px-4 text-sm text-gray-800 transition-all duration-300 focus:border-[#2F6B4F] focus:ring-2 focus:ring-[#2F6B4F]/20 focus:shadow-sm focus:outline-none appearance-none hover:border-gray-300";
+    "w-full h-12 rounded-xl border border-neutral-200 bg-white px-4 text-sm text-gray-800 transition-all duration-300 focus:border-[#8A5E38] focus:ring-2 focus:ring-[#8A5E38]/20 focus:shadow-sm focus:outline-none appearance-none hover:border-gray-300";
 
 const labelBase = "block text-[13px] font-semibold text-gray-700 mb-2.5";
 
@@ -193,10 +193,10 @@ export default function DemandeAnalysePage() {
                 />
                 <section className="py-32 text-center">
                     <div className="max-w-lg mx-auto px-6">
-                        <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-green-100 shadow-inner">
+                        <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-full bg-[#EADFC9] shadow-inner">
                             <CheckCircle2 className="h-12 w-12 text-[var(--inp-vert)]" />
                         </div>
-                        <h2 className="text-3xl font-bold text-green-900 mb-4">
+                        <h2 className="text-3xl font-bold text-[#5E3D20] mb-4">
                             Demande enregistrée
                         </h2>
                         <p className="text-gray-600 leading-relaxed mb-3">
@@ -221,7 +221,7 @@ export default function DemandeAnalysePage() {
                         </p>
                         <a
                             href="/"
-                            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#0f3d2e] to-[#1f5c3f] px-8 py-3.5 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:shadow-xl hover:brightness-110"
+                            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-[#5E3D20] to-[#8A5E38] px-8 py-3.5 text-sm font-semibold uppercase tracking-wider text-white shadow-lg transition-all hover:shadow-xl hover:brightness-110"
                         >
                             Retour à l&apos;accueil
                             <ArrowRight className="h-4 w-4" />
@@ -243,7 +243,7 @@ export default function DemandeAnalysePage() {
             />
 
             {/* ── Process steps ── */}
-            <section className="py-16 bg-gradient-to-b from-green-50/60 to-transparent">
+            <section className="py-16 bg-gradient-to-b from-[#F7F1E6]/60 to-transparent">
                 <div className="max-w-5xl mx-auto px-6">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
@@ -268,15 +268,15 @@ export default function DemandeAnalysePage() {
                         ].map((item) => (
                             <div
                                 key={item.step}
-                                className="relative flex flex-col items-center text-center p-8 rounded-3xl border border-green-100 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-xl hover:border-green-200 transition-all duration-500 group"
+                                className="relative flex flex-col items-center text-center p-8 rounded-3xl border border-[#EADFC9] bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-xl hover:border-[#DCC8A8] transition-all duration-500 group"
                             >
-                                <span className="absolute top-4 left-5 text-5xl font-black text-green-100/80 group-hover:text-green-200 transition-colors duration-500">
+                                <span className="absolute top-4 left-5 text-5xl font-black text-[#EADFC9]/80 group-hover:text-[#DCC8A8] transition-colors duration-500">
                                     {item.step}
                                 </span>
                                 <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl shadow-lg group-hover:scale-105 transition-transform duration-300" style={{ background: INP_GRADIENT }}>
                                     <item.icon className="h-7 w-7 text-white" />
                                 </div>
-                                <h3 className="text-lg font-bold text-green-900 mb-2">
+                                <h3 className="text-lg font-bold text-[#5E3D20] mb-2">
                                     {item.title}
                                 </h3>
                                 <p className="text-sm text-gray-500 leading-relaxed">
@@ -293,7 +293,7 @@ export default function DemandeAnalysePage() {
                 <div className="max-w-4xl mx-auto px-6">
 
                     {/* ── Scientific info banner ── */}
-                    <div className="relative overflow-hidden rounded-2xl p-8 md:p-10 mb-14 shadow-lg bg-gradient-to-r from-[#1F4D3A] via-[#2F6B4F] to-[#2F6B4F]">
+                    <div className="relative overflow-hidden rounded-2xl p-8 md:p-10 mb-14 shadow-lg bg-gradient-to-r from-[#5E3D20] via-[#8A5E38] to-[#8A5E38]">
                         <div className="absolute inset-0 bg-black/10 mix-blend-overlay" />
                         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3" />
                         <div className="absolute bottom-0 left-0 w-40 h-40 bg-white/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4" />
@@ -305,11 +305,11 @@ export default function DemandeAnalysePage() {
                                 <h3 className="text-xl font-bold text-white mb-2">
                                     Procédure officielle — Protocole national
                                 </h3>
-                                <p className="text-sm text-green-50/90 leading-relaxed max-w-2xl">
+                                <p className="text-sm text-[#F7F1E6]/90 leading-relaxed max-w-2xl">
                                     Les échantillons doivent être prélevés à une profondeur de 0-30 cm,
                                     dans un rayon représentatif de la parcelle. Chaque échantillon doit peser
                                     entre 500 g et 1 kg, conditionné dans un sac plastique étiqueté. Consultez
-                                    notre <span className="underline text-white font-medium hover:text-green-100 transition-colors cursor-pointer">guide de prélèvement</span> pour
+                                    notre <span className="underline text-white font-medium hover:text-[#EADFC9] transition-colors cursor-pointer">guide de prélèvement</span> pour
                                     des instructions détaillées.
                                 </p>
                             </div>
@@ -328,7 +328,7 @@ export default function DemandeAnalysePage() {
                         </div>
                         <div className="w-full h-3 bg-neutral-200 rounded-full overflow-hidden shadow-inner">
                             <div
-                                className="h-full bg-gradient-to-r from-[#1F4D3A] via-[#2F6B4F] to-[#8B5E3C] rounded-full transition-all duration-700 ease-in-out"
+                                className="h-full bg-gradient-to-r from-[#5E3D20] via-[#8A5E38] to-[#8B5E3C] rounded-full transition-all duration-700 ease-in-out"
                                 style={{ width: `${progress}%` }}
                             />
                         </div>
@@ -428,7 +428,7 @@ export default function DemandeAnalysePage() {
                             </div>
 
                             {/* Second row: surface, GPS */}
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6 mt-8 pt-6 border-t border-green-100/40">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-6 mt-8 pt-6 border-t border-[#EADFC9]/40">
                                 <Field label="Superficie (ha)">
                                     <input type="number" step="0.01" className={inputBase} placeholder="ex: 5.5" value={form.surface} onChange={(e) => set("surface", e.target.value)} />
                                 </Field>
@@ -485,14 +485,14 @@ export default function DemandeAnalysePage() {
                                         <label
                                             key={opt.label}
                                             className={`group relative flex items-start gap-4 cursor-pointer rounded-2xl border-2 p-5 transition-all duration-300 ${checked
-                                                ? "border-[#1F4D3A] bg-green-50 shadow-md"
-                                                : "border-neutral-100 bg-white hover:border-[#2F6B4F] hover:shadow-md"
+                                                ? "border-[#5E3D20] bg-[#F7F1E6] shadow-md"
+                                                : "border-neutral-100 bg-white hover:border-[#8A5E38] hover:shadow-md"
                                                 }`}
                                         >
                                             {/* Custom checkbox */}
                                             <div className={`mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-md border-2 transition-all duration-200 ${checked
-                                                ? "border-[#1F4D3A] bg-[#1F4D3A]"
-                                                : "border-gray-300 group-hover:border-[#2F6B4F]"
+                                                ? "border-[#5E3D20] bg-[#5E3D20]"
+                                                : "border-gray-300 group-hover:border-[#8A5E38]"
                                                 }`}>
                                                 {checked && (
                                                     <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -507,7 +507,7 @@ export default function DemandeAnalysePage() {
                                                 className="sr-only"
                                             />
                                             <div>
-                                                <span className={`text-sm font-semibold block transition-colors ${checked ? "text-[#1F4D3A]" : "text-gray-700 group-hover:text-gray-900"}`}>
+                                                <span className={`text-sm font-semibold block transition-colors ${checked ? "text-[#5E3D20]" : "text-gray-700 group-hover:text-gray-900"}`}>
                                                     {opt.label}
                                                 </span>
                                                 <span className="text-xs text-gray-500 mt-0.5 block">
@@ -552,7 +552,7 @@ export default function DemandeAnalysePage() {
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="group w-full flex items-center justify-center gap-3 rounded-xl py-4 md:py-5 text-sm font-semibold uppercase tracking-[0.15em] text-white shadow-lg bg-gradient-to-r from-[#1F4D3A] via-[#2F6B4F] to-[#8B5E3C] transition-all duration-300 hover:shadow-xl hover:opacity-95 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#2F6B4F] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
+                                className="group w-full flex items-center justify-center gap-3 rounded-xl py-4 md:py-5 text-sm font-semibold uppercase tracking-[0.15em] text-white shadow-lg bg-gradient-to-r from-[#5E3D20] via-[#8A5E38] to-[#8B5E3C] transition-all duration-300 hover:shadow-xl hover:opacity-95 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-[#8A5E38] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-70"
                             >
                                 {isSubmitting ? (
                                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -608,14 +608,14 @@ function SectionHeader({
     return (
         <div className="mb-8 pb-5 border-b border-neutral-100">
             <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-50 text-[#2F6B4F]">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F7F1E6] text-[#8A5E38]">
                     <Icon className="h-5 w-5" />
                 </div>
                 <div>
                     <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#8B5E3C]">
                         Étape {number}
                     </span>
-                    <h2 className="text-xl font-bold leading-tight text-[#1F4D3A]">
+                    <h2 className="text-xl font-bold leading-tight text-[#5E3D20]">
                         {title}
                     </h2>
                 </div>

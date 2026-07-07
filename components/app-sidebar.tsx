@@ -29,6 +29,7 @@ import {
   CalendarClockIcon,
   HistoryIcon,
   FlaskConicalIcon,
+  MicroscopeIcon,
   Settings2Icon,
   CircleHelpIcon,
   SearchIcon,
@@ -60,22 +61,8 @@ const navSecondary = [
     title: "Mon espace",
     url: "/dashboard/mon-espace",
     icon: <CircleUserRoundIcon />,
-  },
-  {
-    title: "Paramètres",
-    url: "/dashboard",
-    icon: <Settings2Icon />,
-  },
-  {
-    title: "Aide",
-    url: "/dashboard",
-    icon: <CircleHelpIcon />,
-  },
-  {
-    title: "Recherche",
-    url: "/dashboard",
-    icon: <SearchIcon />,
-  },
+  }
+ 
 ];
 
 const documents = [
@@ -83,17 +70,7 @@ const documents = [
     name: "GED — Documents",
     url: "/dashboard/ged",
     icon: <DatabaseIcon />,
-  },
-  {
-    name: "Rapports",
-    url: "/dashboard",
-    icon: <FileChartColumnIcon />,
-  },
-  {
-    name: "Archives",
-    url: "/dashboard",
-    icon: <FileIcon />,
-  },
+  }
 ];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
@@ -131,6 +108,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       name: "Publ. scientifiques",
       url: "/dashboard/publications-scientifiques",
       icon: <FlaskConicalIcon />,
+    },
+    {
+      name: "Recherche",
+      url: "/dashboard/recherche",
+      icon: <MicroscopeIcon />,
     },
     {
       name: "Médiathèque",

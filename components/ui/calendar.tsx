@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { fr } from "date-fns/locale";
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import {
   DayPicker,
   getDefaultClassNames,
@@ -97,12 +97,26 @@ function Calendar({
           defaultClassNames.button_next,
         ),
         month_caption: cn(
-          "flex h-8 w-full items-center justify-center px-8",
+          "flex h-8 w-full items-center justify-center gap-1.5 px-8",
           defaultClassNames.month_caption,
         ),
         caption_label: cn(
-          "text-sm font-medium capitalize",
+          "select-none text-sm font-medium capitalize",
+          captionLayout !== "label" &&
+            "flex h-8 items-center gap-1 rounded-md pl-2 pr-1 text-sm [&>svg]:size-3.5 [&>svg]:text-muted-foreground",
           defaultClassNames.caption_label,
+        ),
+        dropdowns: cn(
+          "flex h-8 w-full items-center justify-center gap-1.5 text-sm font-medium",
+          defaultClassNames.dropdowns,
+        ),
+        dropdown_root: cn(
+          "relative rounded-md border border-input bg-background shadow-xs has-focus:border-ring has-focus:ring-2 has-focus:ring-ring/50",
+          defaultClassNames.dropdown_root,
+        ),
+        dropdown: cn(
+          "absolute inset-0 z-10 w-full cursor-pointer appearance-none bg-transparent px-2 text-sm capitalize opacity-0",
+          defaultClassNames.dropdown,
         ),
         weekdays: cn("flex", defaultClassNames.weekdays),
         weekday: cn(
@@ -134,6 +148,14 @@ function Calendar({
           if (orientation === "left") {
             return (
               <ChevronLeftIcon
+                className={cn("size-4", chevronClassName)}
+                {...chevronProps}
+              />
+            );
+          }
+          if (orientation === "down") {
+            return (
+              <ChevronDownIcon
                 className={cn("size-4", chevronClassName)}
                 {...chevronProps}
               />

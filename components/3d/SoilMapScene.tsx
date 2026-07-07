@@ -63,7 +63,7 @@ export function SoilMapScene({ enabled = true, className = "" }: SoilMapScenePro
           className="relative"
           style={{
             transform: "translateZ(0px) rotateX(8deg)",
-            filter: "drop-shadow(0 0 20px rgba(31, 61, 43, 0.15))",
+            filter: "drop-shadow(0 0 20px rgba(123, 79, 42, 0.15))",
           }}
         >
           <svg
@@ -92,8 +92,8 @@ export function SoilMapScene({ enabled = true, className = "" }: SoilMapScenePro
           <div
             className="w-px h-full"
             style={{
-              background: "linear-gradient(to bottom, transparent, rgba(31,61,43,0.25), transparent)",
-              boxShadow: "0 0 12px rgba(31,61,43,0.2)",
+              background: "linear-gradient(to bottom, transparent, rgba(123,79,42,0.25), transparent)",
+              boxShadow: "0 0 12px rgba(123,79,42,0.2)",
             }}
           />
         </div>
@@ -111,7 +111,7 @@ export function SoilMapScene({ enabled = true, className = "" }: SoilMapScenePro
               left: pos.x,
               top: pos.y,
               transform: "translate(-50%, -50%)",
-              boxShadow: "0 0 8px rgba(31,61,43,0.5)",
+              boxShadow: "0 0 8px rgba(123,79,42,0.5)",
               animation: `hero-point-pulse 2s ease-in-out ${i * 0.4}s infinite`,
             }}
           />

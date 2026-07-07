@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { demoDelegations, getDelegationBySlug } from "@/lib/demoDelegations";
+import { DelegationsSidePanel } from "@/components/institut/DelegationsSidePanel";
 import {
   getPublishedInstitutDelegationBySlug,
   getPublishedInstitutDelegationSlugs,
@@ -102,7 +103,7 @@ export default async function DelegationDetailPage({ params }: PageProps) {
 
   return (
     <main className="min-h-[70vh] bg-[#F8F1E0]">
-      <div className="container mx-auto px-4 py-12 max-w-5xl">
+      <div className="container mx-auto px-4 py-12 max-w-6xl">
         {/* Fil d'Ariane */}
         <Link
           href="/institut/organigramme"
@@ -111,6 +112,9 @@ export default async function DelegationDetailPage({ params }: PageProps) {
           ← Retour à l&apos;organigramme
         </Link>
 
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+          {/* Colonne principale — contenu de la délégation */}
+          <div className="min-w-0">
         {/* En-tête de la délégation */}
         <header className="bg-white rounded-lg shadow-sm border border-[#E5DCC2] overflow-hidden mb-8">
           <div
@@ -275,6 +279,13 @@ export default async function DelegationDetailPage({ params }: PageProps) {
           >
             Nous contacter
           </Link>
+        </div>
+          </div>
+
+          {/* Colonne latérale — navigation entre délégations (sticky desktop) */}
+          <aside className="lg:sticky lg:top-24">
+            <DelegationsSidePanel currentSlug={delegation.slug} />
+          </aside>
         </div>
       </div>
     </main>

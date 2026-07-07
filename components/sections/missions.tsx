@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import Link from "next/link";
@@ -115,6 +116,15 @@ export function Missions() {
   return (
     <section
       className="py-20 px-4 bg-muted/40"
+      // Charte de référence (Vercel) : sur cette section le ton dominant est le
+      // brun terre. La référence définit globalement `--primary` et `--inp-vert`
+      // sur ce brun ; ici on applique la même valeur LOCALEMENT (scopée à la
+      // section) → titre via le token `--primary` (text-primary), et survols de
+      // carte / flèche / focus (var(--inp-vert)) passent en ocre/brun comme la
+      // référence, sans modifier les tokens globaux.
+      style={
+        { "--primary": "#7B4F2A", "--inp-vert": "#7B4F2A" } as CSSProperties
+      }
       aria-labelledby="missions-title"
     >
       <div className="container mx-auto max-w-6xl">
