@@ -70,6 +70,7 @@ const RESOURCE_LABELS: Record<string, string> = {
   InstitutMembre: "Membre de l'équipe",
   InstitutDelegation: "Délégation (institut)",
   Recrutement: "Offre de recrutement",
+  Mission: "Mission",
 };
 
 export function getResourceLabel(resource: string): string {

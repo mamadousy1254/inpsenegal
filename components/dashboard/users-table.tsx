@@ -107,6 +107,7 @@ type ViewTab =
 const MANAGEMENT_ROLES: UserRole[] = [
   "super_admin",
   "admin",
+  "directeur",
   "rh",
   "manager",
 ];

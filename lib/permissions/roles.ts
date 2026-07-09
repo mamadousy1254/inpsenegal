@@ -1,6 +1,7 @@
 export const USER_ROLES = [
   "super_admin",
   "admin",
+  "directeur",
   "rh",
   "manager",
   "employe",
@@ -14,6 +15,7 @@ export type UserRole = (typeof USER_ROLES)[number];
 export const USER_ROLE_LABELS: Record<UserRole, string> = {
   super_admin: "Super administrateur",
   admin: "Administrateur",
+  directeur: "Directeur",
   rh: "Ressources humaines",
   manager: "Responsable / Manager",
   employe: "Employé",

@@ -20,6 +20,10 @@ export const ROLE_STYLES: Record<
     badge: "border-indigo-200 bg-indigo-50 text-indigo-800",
     dot: "bg-indigo-500",
   },
+  directeur: {
+    badge: "border-violet-200 bg-violet-50 text-violet-900",
+    dot: "bg-violet-600",
+  },
   rh: {
     badge: "border-blue-200 bg-blue-50 text-blue-800",
     dot: "bg-blue-500",

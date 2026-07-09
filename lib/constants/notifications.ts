@@ -12,6 +12,7 @@ export const NOTIFIER_CHANNEL_LABELS: Record<NotifierChannel, string> = {
 export const VALIDATOR_ELIGIBLE_ROLES = [
   "super_admin",
   "admin",
+  "directeur",
   "rh",
   "manager",
 ] as const satisfies readonly UserRole[];

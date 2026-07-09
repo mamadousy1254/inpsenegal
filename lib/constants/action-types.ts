@@ -58,6 +58,15 @@ export const ACTIONS = {
   CONVOCATION_ARCHIVE: "convocation.archive",
   ABSENCE_DELEGATION_CREATE: "absence.delegation.create",
   ABSENCE_DELEGATION_REVOKE: "absence.delegation.revoke",
+  MISSION_CREATE: "mission.create",
+  MISSION_UPDATE: "mission.update",
+  MISSION_DELETE: "mission.delete",
+  MISSION_SUBMIT: "mission.submit",
+  MISSION_APPROVE: "mission.approve",
+  MISSION_REJECT: "mission.reject",
+  MISSION_START: "mission.start",
+  MISSION_COMPLETE: "mission.complete",
+  MISSION_CANCEL: "mission.cancel",
 } as const;
 
 export type ActionCode = (typeof ACTIONS)[keyof typeof ACTIONS];
@@ -91,4 +100,13 @@ export const ACTION_LABELS: Record<ActionCode, string> = {
   "convocation.archive": "Archivage d'une convocation",
   "absence.delegation.create": "Délégation de validation créée",
   "absence.delegation.revoke": "Délégation de validation révoquée",
+  "mission.create": "Création d'une mission",
+  "mission.update": "Modification d'une mission",
+  "mission.delete": "Suppression d'une mission",
+  "mission.submit": "Mission soumise pour validation",
+  "mission.approve": "Étape de validation mission approuvée",
+  "mission.reject": "Mission refusée",
+  "mission.start": "Mission démarrée",
+  "mission.complete": "Mission terminée",
+  "mission.cancel": "Mission annulée",
 };

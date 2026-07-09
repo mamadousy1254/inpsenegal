@@ -40,11 +40,17 @@ import {
   Building2Icon,
   HandshakeIcon,
   MailIcon,
+  PlaneIcon,
 } from "lucide-react";
 import { USER_ROLE_LABELS } from "@/lib/permissions/roles";
 import { canManageSiteContent, canManageUsers, canManageLabRequests } from "@/lib/permissions/can";
 
 const navMain = [
+  {
+    title: "Missions",
+    url: "/dashboard/missions",
+    icon: <PlaneIcon />,
+  },
   {
     title: "Absences & congés",
     url: "/dashboard/absences",

@@ -74,7 +74,7 @@ type UserOption = {
   occupation: string;
 };
 
-const ADMIN_ABSENCE_ROLES: UserRole[] = ["super_admin", "admin", "rh"];
+const ADMIN_ABSENCE_ROLES: UserRole[] = ["super_admin", "admin", "directeur", "rh"];
 
 const SELECT_IN_DIALOG_PROPS = {
   side: "bottom" as const,
