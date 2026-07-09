@@ -120,3 +120,16 @@ export function canManageAllMissions(role: UserRole): boolean {
 export function isMissionManagerRole(role: UserRole): boolean {
   return role === "manager";
 }
+
+const MISSION_CREATE_ROLES: UserRole[] = [
+  "super_admin",
+  "admin",
+  "directeur",
+  "rh",
+  "manager",
+];
+
+/** Création d'une nouvelle mission. */
+export function canCreateMission(role: UserRole): boolean {
+  return MISSION_CREATE_ROLES.includes(role);
+}

@@ -32,7 +32,7 @@ import { MissionsCalendar } from "@/components/dashboard/missions/missions-calen
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { canManageAllMissions, canViewAllMissions, isDirectorOrAdminRole } from "@/lib/permissions/can";
+import { canViewAllMissions, canCreateMission, isDirectorOrAdminRole } from "@/lib/permissions/can";
 import type { UserRole } from "@/lib/permissions/roles";
 import type { SerializedMission } from "@/lib/services/mission/serialize-mission";
 import type { MissionDashboardStats } from "@/lib/types/mission-stats";
@@ -66,7 +66,7 @@ export function MissionsPage() {
   const role = (dbUser?.role ?? session?.user?.role) as UserRole | undefined;
   const roleReady = sessionStatus !== "loading" && !userLoading && Boolean(role);
   const showAllScope = role ? canViewAllMissions(role) : false;
-  const canManage = role ? canManageAllMissions(role) : false;
+  const canCreate = role ? canCreateMission(role) : false;
 
   const [view, setView] = useState<"list" | "calendar">("list");
   const [scope, setScope] = useState<"mine" | "all">("all");
@@ -276,13 +276,15 @@ export function MissionsPage() {
             Planifiez, suivez et validez les ordres de mission des agents.
           </p>
         </div>
-        <Button
-          className="gap-2 bg-[var(--inp-vert)] shadow-md hover:bg-[var(--inp-vert)]/90"
-          onClick={() => setCreateOpen(true)}
-        >
-          <PlusIcon className="size-4" />
-          Nouvelle mission
-        </Button>
+        {canCreate && (
+          <Button
+            className="gap-2 bg-[var(--inp-vert)] shadow-md hover:bg-[var(--inp-vert)]/90"
+            onClick={() => setCreateOpen(true)}
+          >
+            <PlusIcon className="size-4" />
+            Nouvelle mission
+          </Button>
+        )}
       </div>
 
       {statsLoading ? (
@@ -384,11 +386,13 @@ export function MissionsPage() {
         </TabsContent>
       </Tabs>
 
-      <MissionFormDialog
-        open={createOpen}
-        onOpenChange={setCreateOpen}
-        onSuccess={handleMissionUpdated}
-      />
+      {canCreate && (
+        <MissionFormDialog
+          open={createOpen}
+          onOpenChange={setCreateOpen}
+          onSuccess={handleMissionUpdated}
+        />
+      )}
 
       <MissionFormDialog
         open={editOpen}

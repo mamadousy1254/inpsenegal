@@ -8,7 +8,7 @@ import {
 } from "@/lib/constants/mission";
 import { connectDB } from "@/lib/mongo/db";
 import MissionModel from "@/lib/mongo/models/mission.model";
-import { canAccessDashboard } from "@/lib/permissions/can";
+import { canAccessDashboard, canCreateMission } from "@/lib/permissions/can";
 import type { UserRole } from "@/lib/permissions/roles";
 import { applyMissionComputedFields } from "@/lib/services/mission/apply-mission-computed-fields";
 import { generateMissionNumber } from "@/lib/services/mission/generate-mission-number";
@@ -176,6 +176,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
     }
 
+    await connectDB();
+
+    const sessionUser = await resolveMissionSessionUser({
+      id: session.user.id,
+      role,
+    });
+
+    if (!sessionUser || !canCreateMission(sessionUser.role)) {
+      return NextResponse.json(
+        { error: "Vous n'êtes pas autorisé à créer une mission" },
+        { status: 403 },
+      );
+    }
+
     const parsed = createMissionSchema.safeParse(await req.json());
     if (!parsed.success) {
       return NextResponse.json(
@@ -194,8 +208,6 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
-
-    await connectDB();
 
     const chef = await resolveChefMissionId(data.chefMissionId);
     const missionnaires = await resolveMissionParticipants(
