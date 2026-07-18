@@ -21,6 +21,7 @@ import {
   resolveMissionParticipants,
 } from "@/lib/services/mission/resolve-participants";
 import { serializeMission } from "@/lib/services/mission/serialize-mission";
+import { normalizeMissionTransport } from "@/lib/services/mission/normalize-transport";
 import {
   buildInitialValidations,
 } from "@/lib/services/mission/validation-workflow";
@@ -144,7 +145,7 @@ export async function GET(req: Request) {
     const skip = (page - 1) * limit;
 
     const [items, total] = await Promise.all([
-      MissionModel.find(filter).sort({ dateDepart: -1 }).skip(skip).limit(limit).lean(),
+      MissionModel.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
       MissionModel.countDocuments(filter),
     ]);
 
@@ -259,7 +260,7 @@ export async function POST(req: Request) {
       heureRetour: data.heureRetour,
       chefMissionId: chef.id,
       missionnaires,
-      transport: data.transport ?? {},
+      transport: normalizeMissionTransport(data.transport),
       budget: data.budget ?? {},
       attachments: data.attachments ?? [],
       status,

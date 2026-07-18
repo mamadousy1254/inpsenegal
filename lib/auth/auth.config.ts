@@ -12,8 +12,16 @@ export const authConfig = {
   providers: [],
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
+      const isLoggedIn = Boolean(auth?.user);
       const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
+      const isOnLogin = nextUrl.pathname === "/login";
+
+      if (isOnLogin) {
+        if (isLoggedIn) {
+          return Response.redirect(new URL("/dashboard", nextUrl));
+        }
+        return true;
+      }
 
       if (isOnDashboard) {
         return isLoggedIn;

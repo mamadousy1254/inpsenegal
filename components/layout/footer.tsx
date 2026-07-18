@@ -85,9 +85,9 @@ export function Footer() {
             </div>
 
             <a
-              href={WHATSAPP_CANAL}
-              target="_blank"
-              rel="noopener noreferrer"
+               href={`https://wa.me/${WHATSAPP_OFFICIEL}`}
+               target="_blank"
+               rel="noopener noreferrer"
               className="bg-[#25D366] hover:bg-[#1DA851] text-white p-4 rounded-xl transition-colors flex items-center gap-3"
             >
               <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
@@ -96,13 +96,15 @@ export function Footer() {
                 </svg>
               </div>
               <div className="text-left">
-                <p className="text-xs text-white/90 leading-tight">Rejoindre le canal</p>
+                <p className="text-xs text-white/90 leading-tight"></p>
                 <p className="font-bold">WhatsApp Officiel</p>
               </div>
             </a>
 
             <a
-              href={`tel:+${WHATSAPP_OFFICIEL}`}
+              href={`https://wa.me/${WHATSAPP_OFFICIEL}`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="bg-white/10 hover:bg-white/15 backdrop-blur-sm text-white p-4 rounded-xl transition-colors flex items-center gap-3 border border-white/20"
             >
               <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
@@ -257,8 +259,7 @@ export function Footer() {
                 <div className="text-[#5A4733]">
                   <p className="font-semibold text-[#2A1F18] mb-1">Heures d&apos;ouverture</p>
                   <p>Lun. – Ven. : 8h – 17h</p>
-                  <p>Sam. : 8h – 13h</p>
-                  <p className="text-[#8B7355] italic text-xs">Fermé dim. et jours fériés</p>
+                  <p className="text-[#8B7355] italic text-xs">Fermé le samedi, dimanche et les jours fériés</p>
                 </div>
               </li>
             </ul>

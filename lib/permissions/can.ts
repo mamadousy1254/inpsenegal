@@ -31,6 +31,19 @@ export function canAccessDashboard(role: UserRole, isActive: boolean): boolean {
   return role !== "partenaire";
 }
 
+const ADMIN_GUIDE_ROLES: UserRole[] = [
+  "super_admin",
+  "admin",
+  "directeur",
+  "rh",
+  "directeur_technique",
+];
+
+/** Accès au guide administrateur. */
+export function canViewAdminGuide(role: UserRole): boolean {
+  return ADMIN_GUIDE_ROLES.includes(role);
+}
+
 export function isAdminRole(role: UserRole): boolean {
   return isDirectorOrAdminRole(role);
 }
@@ -44,6 +57,11 @@ const SITE_CONTENT_ROLES: UserRole[] = [
 
 export function canManageSiteContent(role: UserRole): boolean {
   return SITE_CONTENT_ROLES.includes(role);
+}
+
+/** Activer / désactiver le mode maintenance du site public. */
+export function canManageMaintenance(role: UserRole): boolean {
+  return isDirectorOrAdminRole(role);
 }
 
 const ABSENCE_ADMIN_ROLES: UserRole[] = [
@@ -104,9 +122,12 @@ const MISSION_ADMIN_ROLES: UserRole[] = [
   "admin",
   "directeur",
   "rh",
+  "pdcvr",
+  "aat",
+  "directeur_technique",
 ];
 
-/** Direction générale / RH : voit toutes les missions. */
+/** Direction générale / RH / PDCVR / AAT / DT : voit toutes les missions. */
 export function canViewAllMissions(role: UserRole): boolean {
   return MISSION_ADMIN_ROLES.includes(role);
 }
@@ -114,6 +135,11 @@ export function canViewAllMissions(role: UserRole): boolean {
 /** Création et gestion globale des missions. */
 export function canManageAllMissions(role: UserRole): boolean {
   return MISSION_ADMIN_ROLES.includes(role);
+}
+
+/** Génération / téléchargement de l'ordre de mission (accès total missions). */
+export function canGenerateOrdreMission(role: UserRole): boolean {
+  return canManageAllMissions(role);
 }
 
 /** Chef de service : voit les missions de sa direction. */
@@ -127,9 +153,23 @@ const MISSION_CREATE_ROLES: UserRole[] = [
   "directeur",
   "rh",
   "manager",
+  "pdcvr",
+  "aat",
+  "directeur_technique",
 ];
 
 /** Création d'une nouvelle mission. */
 export function canCreateMission(role: UserRole): boolean {
   return MISSION_CREATE_ROLES.includes(role);
+}
+
+const MISSION_DELETE_ROLES: UserRole[] = [
+  "pdcvr",
+  "aat",
+  "directeur_technique",
+];
+
+/** Suppression de missions (admin / directeur / PDCVR / AAT / DT). */
+export function canDeleteAnyMission(role: UserRole): boolean {
+  return isDirectorOrAdminRole(role) || MISSION_DELETE_ROLES.includes(role);
 }

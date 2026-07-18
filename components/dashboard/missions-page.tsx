@@ -32,7 +32,11 @@ import { MissionsCalendar } from "@/components/dashboard/missions/missions-calen
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import { canViewAllMissions, canCreateMission, isDirectorOrAdminRole } from "@/lib/permissions/can";
+import {
+  canViewAllMissions,
+  canCreateMission,
+  canDeleteAnyMission,
+} from "@/lib/permissions/can";
 import type { UserRole } from "@/lib/permissions/roles";
 import type { SerializedMission } from "@/lib/services/mission/serialize-mission";
 import type { MissionDashboardStats } from "@/lib/types/mission-stats";
@@ -177,7 +181,7 @@ export function MissionsPage() {
     }
   };
 
-  const canDeleteMissionRole = role ? isDirectorOrAdminRole(role) : false;
+  const canDeleteMissionRole = role ? canDeleteAnyMission(role) : false;
 
   const canDeleteMission = useCallback(
     (mission: SerializedMission) => {

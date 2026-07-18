@@ -16,6 +16,7 @@ export type MissionAgentOption = {
   lastname: string;
   email: string;
   occupation?: string;
+  service?: string;
 };
 
 type MissionAgentPickerProps = {
@@ -24,6 +25,8 @@ type MissionAgentPickerProps = {
   onSelectedChange: (ids: string[]) => void;
   onChefChange: (id: string) => void;
   currentUser: MissionAgentOption | null;
+  /** Agents déjà connus (ex. occupants des voitures) pour afficher noms/fonctions. */
+  knownAgents?: MissionAgentOption[];
   disabled?: boolean;
 };
 
@@ -37,6 +40,7 @@ export function MissionAgentPicker({
   onSelectedChange,
   onChefChange,
   currentUser,
+  knownAgents = [],
   disabled = false,
 }: MissionAgentPickerProps) {
   const [search, setSearch] = useState("");
@@ -75,20 +79,38 @@ export function MissionAgentPicker({
     };
   }, [debouncedSearch]);
 
-  const selectedAgents = useMemo(() => {
+  const agentDirectory = useMemo(() => {
     const map = new Map<string, MissionAgentOption>();
     if (currentUser) map.set(currentUser._id, currentUser);
+    for (const user of knownAgents) map.set(user._id, user);
     for (const user of remoteUsers) map.set(user._id, user);
+    return map;
+  }, [currentUser, knownAgents, remoteUsers]);
+
+  const selectedAgents = useMemo(() => {
     return selectedIds
-      .map((id) => map.get(id))
-      .filter((user): user is MissionAgentOption => Boolean(user));
-  }, [currentUser, remoteUsers, selectedIds]);
+      .map((id) => {
+        const known = agentDirectory.get(id);
+        if (known) return known;
+        // Fallback si l'agent n'est pas encore résolu
+        return {
+          _id: id,
+          firstname: "Agent",
+          lastname: "",
+          email: "",
+        } satisfies MissionAgentOption;
+      });
+  }, [agentDirectory, selectedIds]);
 
   const browseUsers = useMemo(() => {
     const map = new Map<string, MissionAgentOption>();
-    if (currentUser) map.set(currentUser._id, currentUser);
-    for (const user of remoteUsers) map.set(user._id, user);
-    return [...map.values()].filter((user) => !selectedIds.includes(user._id));
+    if (currentUser && !selectedIds.includes(currentUser._id)) {
+      map.set(currentUser._id, currentUser);
+    }
+    for (const user of remoteUsers) {
+      if (!selectedIds.includes(user._id)) map.set(user._id, user);
+    }
+    return [...map.values()];
   }, [currentUser, remoteUsers, selectedIds]);
 
   function toggleAgent(user: MissionAgentOption) {

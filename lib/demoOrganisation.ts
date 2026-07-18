@@ -94,7 +94,7 @@ export const demoOrganisation: PosteOrganisation[] = [
   {
     id: "division-rdi",
     intitule: "Chef de la Division Recherche, Développement et Innovation",
-    acronyme: "RDI",
+    acronyme: "DRDI",
     niveau: "division-technique",
     rattachement: "Directeur Technique",
     finalite:
@@ -113,7 +113,8 @@ export const demoOrganisation: PosteOrganisation[] = [
   },
   {
     id: "division-cartographie-cadastre",
-    intitule: "Chef de la Division Cartographie et Cadastre",
+    intitule: "Chef de la Division Cartographie et Cadastre Agricole",
+    acronyme: "DCCA",
     niveau: "division-technique",
     rattachement: "Directeur Technique",
     finalite:
@@ -132,6 +133,7 @@ export const demoOrganisation: PosteOrganisation[] = [
   {
     id: "division-fertilite-restauration",
     intitule: "Responsable de la Division Fertilité et Restauration des Sols",
+    acronyme: "DFRS",
     niveau: "division-technique",
     rattachement: "Directeur Technique",
     finalite:
@@ -151,6 +153,7 @@ export const demoOrganisation: PosteOrganisation[] = [
   {
     id: "responsable-laboratoires",
     intitule: "Responsable des Laboratoires",
+    acronyme: "LABO",
     niveau: "division-technique",
     rattachement: "Directeur Technique",
     finalite:
@@ -168,7 +171,8 @@ export const demoOrganisation: PosteOrganisation[] = [
   },
   {
     id: "responsable-administratif-technique",
-    intitule: "Responsable Administratif et Technique (SIG)",
+    intitule: "Responsable Administratif et Technique",
+    acronyme: "RAT",
     niveau: "division-technique",
     rattachement: "Directeur Technique",
     finalite:
@@ -229,7 +233,7 @@ export const demoOrganisation: PosteOrganisation[] = [
   {
     id: "responsable-assurance-qualite",
     intitule: "Responsable Assurance Qualité",
-    acronyme: "RAQ",
+    acronyme: "RQ",
     niveau: "support",
     rattachement: "Directeur Général",
     finalite:
@@ -250,6 +254,7 @@ export const demoOrganisation: PosteOrganisation[] = [
     id: "responsable-informatique-communication",
     intitule: "Responsable de la Cellule Informatique et Communication",
     niveau: "support",
+    acronyme: "CIC",
     rattachement: "Directeur Général",
     finalite:
       "Le Responsable de la Cellule Informatique et Communication assure la gestion et la sécurisation du système d'information de l'Institut, ainsi que la conception et la mise en œuvre de la stratégie de communication institutionnelle.",

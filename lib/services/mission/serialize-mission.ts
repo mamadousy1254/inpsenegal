@@ -20,6 +20,7 @@ export type SerializedMissionParticipant = {
   userId: string;
   fullname: string;
   occupation: string;
+  grade?: string;
   service?: string;
   phone?: string;
   email: string;
@@ -121,6 +122,17 @@ export type SerializedMission = {
     immatriculation?: string;
     chauffeur?: string;
     kilometrage?: number;
+    nombreVehicules?: number;
+    personnesParVehicule?: number[];
+    immatriculationsVehicules?: string[];
+    occupantsParVehicule?: Array<
+      Array<{
+        userId: string;
+        fullname: string;
+        occupation?: string;
+        service?: string;
+      }>
+    >;
   };
   budget: {
     perDiem: number;
@@ -254,6 +266,7 @@ export function serializeMission(doc: IMission | Record<string, unknown>): Seria
       userId: m.userId.toString(),
       fullname: m.fullname,
       occupation: m.occupation,
+      grade: m.grade,
       service: m.service,
       phone: m.phone,
       email: m.email,
@@ -263,6 +276,22 @@ export function serializeMission(doc: IMission | Record<string, unknown>): Seria
       immatriculation: d.transport?.immatriculation,
       chauffeur: d.transport?.chauffeur,
       kilometrage: d.transport?.kilometrage,
+      nombreVehicules: d.transport?.nombreVehicules,
+      personnesParVehicule: d.transport?.personnesParVehicule ?? [],
+      immatriculationsVehicules: d.transport?.immatriculationsVehicules ?? [],
+      occupantsParVehicule: (Array.isArray(d.transport?.occupantsParVehicule)
+        ? d.transport.occupantsParVehicule
+        : []
+      ).map((vehicle) =>
+        (Array.isArray(vehicle) ? vehicle : [])
+          .filter((occupant) => occupant?.userId && occupant?.fullname)
+          .map((occupant) => ({
+            userId: String(occupant.userId),
+            fullname: String(occupant.fullname),
+            occupation: occupant.occupation,
+            service: occupant.service,
+          })),
+      ),
     },
     budget: {
       perDiem: d.budget?.perDiem ?? 0,

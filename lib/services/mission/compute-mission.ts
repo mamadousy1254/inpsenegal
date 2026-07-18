@@ -52,7 +52,7 @@ export type MissionBudgetInput = Partial<IMissionBudget> & {
   budgetConsomme?: number;
 };
 
-/** Somme des postes budgétaires prévisionnels. */
+/** Budget prévisionnel : postes détaillés (anciennes missions) ou budget global. */
 export function computeMissionBudgetPrevu(budget: MissionBudgetInput): number {
   const fields: (keyof IMissionBudget)[] = [
     "perDiem",
@@ -64,8 +64,16 @@ export function computeMissionBudgetPrevu(budget: MissionBudgetInput): number {
     "divers",
   ];
 
-  const total = fields.reduce((sum, key) => sum + (Number(budget[key]) || 0), 0);
-  return Math.round(total);
+  const linesTotal = fields.reduce(
+    (sum, key) => sum + (Number(budget[key]) || 0),
+    0,
+  );
+
+  if (linesTotal > 0) {
+    return Math.round(linesTotal);
+  }
+
+  return Math.round(Number(budget.budgetPrevu) || 0);
 }
 
 /** Budget restant = prévu − consommé (minimum 0). */

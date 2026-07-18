@@ -24,9 +24,17 @@ export interface IMissionParticipant {
   userId: mongoose.Types.ObjectId;
   fullname: string;
   occupation: string;
+  grade?: string;
   service?: string;
   phone?: string;
   email: string;
+}
+
+export interface IVehicleOccupant {
+  userId: mongoose.Types.ObjectId;
+  fullname: string;
+  occupation?: string;
+  service?: string;
 }
 
 export interface IMissionTransport {
@@ -34,6 +42,14 @@ export interface IMissionTransport {
   immatriculation?: string;
   chauffeur?: string;
   kilometrage?: number;
+  /** Nombre de véhicules pour la mission. */
+  nombreVehicules?: number;
+  /** Nombre de personnes dans chaque véhicule (index = véhicule). */
+  personnesParVehicule?: number[];
+  /** Immatriculation optionnelle de chaque véhicule (index = véhicule). */
+  immatriculationsVehicules?: string[];
+  /** Occupants optionnels de chaque véhicule (index = véhicule). */
+  occupantsParVehicule?: IVehicleOccupant[][];
 }
 
 export interface IMissionBudget {
@@ -189,6 +205,7 @@ const participantSchema = new Schema<IMissionParticipant>(
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     fullname: { type: String, required: true, trim: true },
     occupation: { type: String, required: true, trim: true },
+    grade: { type: String, trim: true },
     service: { type: String, trim: true },
     phone: { type: String, trim: true },
     email: { type: String, required: true, trim: true, lowercase: true },
@@ -202,6 +219,14 @@ const transportSchema = new Schema<IMissionTransport>(
     immatriculation: { type: String, trim: true },
     chauffeur: { type: String, trim: true },
     kilometrage: { type: Number, min: 0 },
+    nombreVehicules: { type: Number, min: 0 },
+    personnesParVehicule: { type: [Number], default: [] },
+    immatriculationsVehicules: { type: [String], default: [] },
+    // Mixed : les tableaux imbriqués de sous-docs sont peu fiables en Mongoose.
+    occupantsParVehicule: {
+      type: Schema.Types.Mixed,
+      default: [],
+    },
   },
   { _id: false },
 );

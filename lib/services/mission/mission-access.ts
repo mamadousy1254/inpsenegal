@@ -1,6 +1,7 @@
 import type { MissionValidationStep } from "@/lib/constants/mission";
 import type { IMission } from "@/lib/mongo/models/mission.model";
 import {
+  canDeleteAnyMission,
   canManageAllMissions,
   canViewAllMissions,
   isDirectorOrAdminRole,
@@ -80,7 +81,7 @@ export function canDeleteMission(
   user: MissionSessionUser,
   _mission: Pick<IMission, "status" | "createdById">,
 ): boolean {
-  return isDirectorOrAdminRole(user.role);
+  return canDeleteAnyMission(user.role);
 }
 
 export function canSubmitMission(

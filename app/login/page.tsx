@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn, useSession } from "next-auth/react";
 import { motion } from "framer-motion";
@@ -35,7 +35,7 @@ function LoginLoading() {
 
 function LoginForm() {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const [serverError, setServerError] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
@@ -44,12 +44,6 @@ function LoginForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({ resolver: zodResolver(schema) });
-
-  useEffect(() => {
-    if (status === "authenticated" && session?.user) {
-      router.replace("/dashboard");
-    }
-  }, [status, session, router]);
 
   const onSubmit = async (data: FormData) => {
     setServerError("");
@@ -65,11 +59,13 @@ function LoginForm() {
       return;
     }
 
-    router.push("/dashboard");
+    router.replace("/dashboard");
     router.refresh();
   };
 
-  if (status === "loading" || status === "authenticated") {
+  // La redirection des sessions déjà actives est gérée par proxy.ts
+  // (évite une boucle client login ↔ dashboard).
+  if (status === "loading") {
     return <LoginLoading />;
   }
 

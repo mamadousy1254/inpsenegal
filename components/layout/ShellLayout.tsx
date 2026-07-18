@@ -17,7 +17,8 @@ export function ShellLayout({ children }: { children: React.ReactNode }) {
     pathname.startsWith("/espace-professionnel") ||
     pathname === "/login" ||
     pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/partage");
+    pathname.startsWith("/partage") ||
+    pathname.startsWith("/maintenance");
 
   if (isBareLayout) {
     return <>{children}</>;

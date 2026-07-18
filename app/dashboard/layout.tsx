@@ -1,4 +1,5 @@
-import { getFreshSession } from "@/lib/auth/get-fresh-session";
+import { resolveFreshSession } from "@/lib/auth/get-fresh-session";
+import { signOut } from "@/lib/auth/auth";
 import { AuthSessionProvider } from "@/components/providers/session-provider";
 import { CurrentUserProvider } from "@/components/providers/current-user-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -10,14 +11,18 @@ export default async function DashboardLayout({
 }: {
   children: ReactNode;
 }) {
-  const session = await getFreshSession();
+  const result = await resolveFreshSession();
 
-  if (!session?.user) {
+  if (result.status === "inactive") {
+    await signOut({ redirectTo: "/login" });
+  }
+
+  if (result.status !== "ok") {
     redirect("/login");
   }
 
   return (
-    <AuthSessionProvider session={session}>
+    <AuthSessionProvider session={result.session}>
       <CurrentUserProvider>
         {children}
         <Toaster richColors position="top-right" />

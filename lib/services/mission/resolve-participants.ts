@@ -22,7 +22,7 @@ export async function resolveMissionParticipants(
     _id: { $in: objectIds },
     isActive: true,
   })
-    .select("firstname lastname email phone occupation service")
+    .select("firstname lastname email phone occupation grade service")
     .lean();
 
   if (!users.length) {
@@ -38,6 +38,7 @@ export async function resolveMissionParticipants(
     userId: user._id as mongoose.Types.ObjectId,
     fullname: `${user.firstname} ${user.lastname}`.trim(),
     occupation: user.occupation,
+    grade: user.grade,
     service: user.service,
     phone: user.phone,
     email: user.email,

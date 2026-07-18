@@ -5,14 +5,19 @@ import UserModel from "@/lib/mongo/models/user.model";
 import type { UserRole } from "@/lib/permissions/roles";
 import type { SENEGAL_REGIONS } from "@/lib/constants/senegal-regions";
 
+export type FreshSessionResult =
+  | { status: "ok"; session: Session }
+  | { status: "unauthenticated" }
+  | { status: "inactive" };
+
 /**
  * Session NextAuth enrichie avec les données utilisateur à jour en base
  * (rôle, nom, etc.) — évite un JWT figé depuis la connexion.
  */
-export async function getFreshSession(): Promise<Session | null> {
+export async function resolveFreshSession(): Promise<FreshSessionResult> {
   const session = await auth();
   if (!session?.user?.id) {
-    return null;
+    return { status: "unauthenticated" };
   }
 
   try {
@@ -23,25 +28,41 @@ export async function getFreshSession(): Promise<Session | null> {
       )
       .lean();
 
-    if (!dbUser?.isActive) {
-      return null;
+    if (!dbUser) {
+      // Échec de lecture / utilisateur introuvable : ne pas invalider
+      // la session JWT (évite une boucle login ↔ dashboard).
+      return { status: "ok", session };
+    }
+
+    if (!dbUser.isActive) {
+      return { status: "inactive" };
     }
 
     return {
-      ...session,
-      user: {
-        ...session.user,
-        email: dbUser.email,
-        firstname: dbUser.firstname,
-        lastname: dbUser.lastname,
-        role: dbUser.role as UserRole,
-        section: dbUser.section as (typeof SENEGAL_REGIONS)[number],
-        occupation: dbUser.occupation,
-        avatar: dbUser.avatar,
+      status: "ok",
+      session: {
+        ...session,
+        user: {
+          ...session.user,
+          email: dbUser.email,
+          firstname: dbUser.firstname,
+          lastname: dbUser.lastname,
+          role: dbUser.role as UserRole,
+          section: dbUser.section as (typeof SENEGAL_REGIONS)[number],
+          occupation: dbUser.occupation,
+          avatar: dbUser.avatar,
+        },
       },
     };
   } catch (error) {
-    console.error("getFreshSession:", error);
-    return session;
+    console.error("resolveFreshSession:", error);
+    return { status: "ok", session };
   }
+}
+
+/** Compatibilité : session enrichie, ou null si non authentifié / inactif. */
+export async function getFreshSession(): Promise<Session | null> {
+  const result = await resolveFreshSession();
+  if (result.status === "ok") return result.session;
+  return null;
 }

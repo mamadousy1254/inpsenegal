@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { MissionStatusBadge } from "@/components/dashboard/missions/mission-status-badge";
 import { MissionTypeBadge } from "@/components/dashboard/missions/mission-type-badge";
 import { MissionValidationStepper } from "@/components/dashboard/missions/mission-validation-stepper";
+import { OrdreMissionDialog } from "@/components/dashboard/missions/ordre-mission-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -121,6 +122,7 @@ export function MissionDetailDialog({
   const [validateOpen, setValidateOpen] = useState(false);
   const [validateAction, setValidateAction] = useState<"approve" | "reject">("approve");
   const [validateComment, setValidateComment] = useState("");
+  const [ordreMissionOpen, setOrdreMissionOpen] = useState(false);
 
   const [terrainObservation, setTerrainObservation] = useState("");
   const [terrainLat, setTerrainLat] = useState("");
@@ -186,6 +188,40 @@ export function MissionDetailDialog({
       mission.missionnaires.find((m) => m.userId === mission.chefMissionId)?.fullname ??
       "—"
     );
+  }, [mission]);
+
+  /** Associe un missionnaire à sa voiture (par userId ou nom). */
+  const vehicleLabelForMissionnaire = useMemo(() => {
+    type VehicleInfo = { label: string; plate?: string; index: number };
+    const byUserId = new Map<string, VehicleInfo>();
+    const byFullname = new Map<string, VehicleInfo>();
+    if (!mission) {
+      return () => undefined as VehicleInfo | undefined;
+    }
+
+    const normalizeName = (value: string) =>
+      value
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+
+    (mission.transport.occupantsParVehicule ?? []).forEach((occupants, index) => {
+      const plate = mission.transport.immatriculationsVehicules?.[index]?.trim();
+      const label = plate
+        ? `Voiture ${index + 1} · ${plate}`
+        : `Voiture ${index + 1}`;
+      const info: VehicleInfo = { label, plate, index };
+
+      for (const occupant of occupants ?? []) {
+        if (occupant.userId) byUserId.set(String(occupant.userId), info);
+        if (occupant.fullname) byFullname.set(normalizeName(occupant.fullname), info);
+      }
+    });
+
+    return (userId: string, fullname: string) =>
+      byUserId.get(userId) ?? byFullname.get(normalizeName(fullname));
   }, [mission]);
 
   const refresh = async () => {
@@ -467,24 +503,35 @@ export function MissionDetailDialog({
                           Missionnaires ({mission.missionnaires.length})
                         </p>
                         <ul className="space-y-2">
-                          {mission.missionnaires.map((m) => (
-                            <li
-                              key={m.userId}
-                              className="rounded-lg border border-border/50 bg-muted/10 px-3 py-2 text-sm"
-                            >
-                              <p className="font-medium">
-                                {m.fullname}
-                                {m.userId === mission.chefMissionId && (
-                                  <span className="ml-2 text-xs text-[var(--inp-vert)]">
-                                    Chef
-                                  </span>
+                          {mission.missionnaires.map((m) => {
+                            const vehicle = vehicleLabelForMissionnaire(
+                              m.userId,
+                              m.fullname,
+                            );
+                            return (
+                              <li
+                                key={m.userId}
+                                className="rounded-lg border border-border/50 bg-muted/10 px-3 py-2 text-sm"
+                              >
+                                <p className="font-medium">
+                                  {m.fullname}
+                                  {m.userId === mission.chefMissionId && (
+                                    <span className="ml-2 text-xs text-[var(--inp-vert)]">
+                                      Chef
+                                    </span>
+                                  )}
+                                </p>
+                                <p className="text-xs text-muted-foreground">
+                                  {m.occupation} · {m.email}
+                                </p>
+                                {vehicle && (
+                                  <p className="mt-1.5 text-xs font-medium text-[var(--inp-vert)]">
+                                    {vehicle.label}
+                                  </p>
                                 )}
-                              </p>
-                              <p className="text-xs text-muted-foreground">
-                                {m.occupation} · {m.email}
-                              </p>
-                            </li>
-                          ))}
+                              </li>
+                            );
+                          })}
                         </ul>
                       </div>
 
@@ -514,15 +561,59 @@ export function MissionDetailDialog({
                           </dl>
                         </div>
 
-                        {mission.transport.moyen && (
+                        {(mission.transport.nombreVehicules ||
+                          mission.transport.moyen) && (
                           <div className="rounded-xl border border-border/60 p-4 text-sm">
                             <p className="font-semibold">Transport</p>
-                            <p className="mt-1 text-muted-foreground">
-                              {MISSION_TRANSPORT_LABELS[mission.transport.moyen]}
-                              {mission.transport.immatriculation
-                                ? ` · ${mission.transport.immatriculation}`
-                                : ""}
-                            </p>
+                            {mission.transport.nombreVehicules ? (
+                              <div className="mt-2 space-y-1 text-muted-foreground">
+                                <p>
+                                  {mission.transport.nombreVehicules} voiture
+                                  {mission.transport.nombreVehicules > 1 ? "s" : ""}
+                                </p>
+                                {(mission.transport.personnesParVehicule ?? []).map(
+                                  (count, index) => {
+                                    const plate =
+                                      mission.transport.immatriculationsVehicules?.[
+                                        index
+                                      ]?.trim();
+                                    const occupants =
+                                      mission.transport.occupantsParVehicule?.[
+                                        index
+                                      ] ?? [];
+                                    return (
+                                      <div
+                                        key={`detail-vehicule-${index}`}
+                                        className="space-y-0.5"
+                                      >
+                                        <p>
+                                          Voiture {index + 1} : {count} personne
+                                          {count > 1 ? "s" : ""}
+                                          {plate ? ` · ${plate}` : ""}
+                                        </p>
+                                        {occupants.length > 0 && (
+                                          <p className="text-xs">
+                                            Occupants :{" "}
+                                            {occupants
+                                              .map((o) => o.fullname)
+                                              .join(", ")}
+                                          </p>
+                                        )}
+                                      </div>
+                                    );
+                                  },
+                                )}
+                              </div>
+                            ) : (
+                              <p className="mt-1 text-muted-foreground">
+                                {mission.transport.moyen
+                                  ? MISSION_TRANSPORT_LABELS[mission.transport.moyen]
+                                  : ""}
+                                {mission.transport.immatriculation
+                                  ? ` · ${mission.transport.immatriculation}`
+                                  : ""}
+                              </p>
+                            )}
                           </div>
                         )}
 
@@ -956,9 +1047,28 @@ export function MissionDetailDialog({
                     )}
                   </TabsContent>
 
-                  <TabsContent value="documents" className="mt-0">
+                  <TabsContent value="documents" className="mt-0 space-y-4">
+                    {permissions?.canGenerateOrdreMission && (
+                      <div className="rounded-xl border border-dashed border-[var(--inp-vert)]/40 bg-[var(--inp-vert)]/5 p-4">
+                        <p className="text-sm font-semibold">Ordre de mission</p>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          Générez un PDF officiel pour chaque personne concernée
+                          (prise en charge PDCVR).
+                        </p>
+                        <Button
+                          className="mt-3 bg-[var(--inp-vert)] hover:bg-[var(--inp-vert)]/90"
+                          size="sm"
+                          disabled={mission.missionnaires.length === 0}
+                          onClick={() => setOrdreMissionOpen(true)}
+                        >
+                          <FileTextIcon className="size-4" />
+                          Créer un ordre de mission
+                        </Button>
+                      </div>
+                    )}
+
                     {mission.attachments.length === 0 ? (
-                      <p className="py-8 text-center text-sm text-muted-foreground">
+                      <p className="py-4 text-center text-sm text-muted-foreground">
                         Aucune pièce jointe.
                       </p>
                     ) : (
@@ -999,6 +1109,16 @@ export function MissionDetailDialog({
                   Créée le {formatDay(mission.createdAt)}
                 </p>
                 <div className="flex flex-wrap gap-2">
+                  {permissions?.canGenerateOrdreMission && (
+                    <Button
+                      variant="outline"
+                      disabled={acting || mission.missionnaires.length === 0}
+                      onClick={() => setOrdreMissionOpen(true)}
+                    >
+                      <FileTextIcon className="size-4" />
+                      Ordre de mission
+                    </Button>
+                  )}
                   {permissions?.canEdit && onEdit && mission.status === "brouillon" && (
                     <Button
                       variant="outline"
@@ -1041,6 +1161,14 @@ export function MissionDetailDialog({
           )}
         </DialogContent>
       </Dialog>
+
+      {permissions?.canGenerateOrdreMission && (
+        <OrdreMissionDialog
+          mission={mission}
+          open={ordreMissionOpen}
+          onOpenChange={setOrdreMissionOpen}
+        />
+      )}
 
       <Dialog open={validateOpen} onOpenChange={setValidateOpen}>
         <DialogContent className="sm:max-w-md">

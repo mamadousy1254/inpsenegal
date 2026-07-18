@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { useCurrentDbUser } from "@/components/providers/current-user-provider";
@@ -43,7 +44,12 @@ import {
   PlaneIcon,
 } from "lucide-react";
 import { USER_ROLE_LABELS } from "@/lib/permissions/roles";
-import { canManageSiteContent, canManageUsers, canManageLabRequests } from "@/lib/permissions/can";
+import {
+  canManageSiteContent,
+  canManageUsers,
+  canManageLabRequests,
+  canViewAdminGuide,
+} from "@/lib/permissions/can";
 
 const navMain = [
   {
@@ -63,13 +69,12 @@ const navMain = [
   },
 ];
 
-const navSecondary = [
+const navSecondaryBase = [
   {
     title: "Mon espace",
     url: "/dashboard/mon-espace",
     icon: <CircleUserRoundIcon />,
-  }
- 
+  },
 ];
 
 const documents = [
@@ -99,6 +104,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const showUsers = role ? canManageUsers(role) : false;
   const showSiteContent = role ? canManageSiteContent(role) : false;
   const showLabRequests = role ? canManageLabRequests(role) : false;
+  const showAdminGuide = role ? canViewAdminGuide(role) : false;
+
+  const navSecondary = [
+    ...navSecondaryBase,
+    ...(showAdminGuide
+      ? [
+          {
+            title: "Guide administrateur",
+            url: "/dashboard/guide",
+            icon: <CircleHelpIcon />,
+          },
+        ]
+      : []),
+  ];
 
   const siteContentItems = [
     {
@@ -195,11 +214,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="h-auto gap-3 rounded-xl px-2 py-2.5 hover:bg-white/8 data-active:bg-transparent"
               render={<Link href="/" />}
             >
-              <div className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-[var(--inp-beige)] to-[#c4a882] text-sm font-bold text-[var(--inp-vert)] shadow-lg shadow-black/25 ring-1 ring-white/20">
-                <span className="relative z-10">INP</span>
-                <span
-                  aria-hidden
-                  className="absolute inset-0 rounded-xl bg-white/25 opacity-40"
+              <div className="relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white shadow-lg shadow-black/25 ring-1 ring-white/20">
+                <Image
+                  src="/images/logo-inp.png"
+                  alt="INP"
+                  width={40}
+                  height={40}
+                  unoptimized
+                  className="size-9 object-contain p-0.5"
                 />
               </div>
               <div className="min-w-0 flex flex-col gap-1 leading-none">

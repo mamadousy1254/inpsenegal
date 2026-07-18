@@ -36,6 +36,22 @@ export const ROLE_STYLES: Record<
     badge: "border-emerald-200 bg-emerald-50 text-emerald-800",
     dot: "bg-emerald-500",
   },
+  chauffeur: {
+    badge: "border-lime-200 bg-lime-50 text-lime-800",
+    dot: "bg-lime-500",
+  },
+  pdcvr: {
+    badge: "border-cyan-200 bg-cyan-50 text-cyan-800",
+    dot: "bg-cyan-500",
+  },
+  aat: {
+    badge: "border-sky-200 bg-sky-50 text-sky-800",
+    dot: "bg-sky-500",
+  },
+  directeur_technique: {
+    badge: "border-orange-200 bg-orange-50 text-orange-900",
+    dot: "bg-orange-500",
+  },
   chercheur: {
     badge: "border-teal-200 bg-teal-50 text-teal-800",
     dot: "bg-teal-500",

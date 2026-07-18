@@ -112,7 +112,15 @@ const MANAGEMENT_ROLES: UserRole[] = [
   "manager",
 ];
 
-const RESEARCH_ROLES: UserRole[] = ["chercheur", "employe", "redacteur"];
+const RESEARCH_ROLES: UserRole[] = [
+  "chercheur",
+  "employe",
+  "chauffeur",
+  "pdcvr",
+  "aat",
+  "directeur_technique",
+  "redacteur",
+];
 
 const VIEW_TABS: {
   value: ViewTab;

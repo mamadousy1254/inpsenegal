@@ -24,7 +24,15 @@ const budgetSchema = z.object({
   peage: z.number().min(0).optional(),
   communication: z.number().min(0).optional(),
   divers: z.number().min(0).optional(),
+  budgetPrevu: z.number().min(0).optional(),
   budgetConsomme: z.number().min(0).optional(),
+});
+
+const vehicleOccupantSchema = z.object({
+  userId: z.string().min(1),
+  fullname: z.string().trim().min(1),
+  occupation: z.string().trim().optional(),
+  service: z.string().trim().optional(),
 });
 
 const transportSchema = z.object({
@@ -32,6 +40,10 @@ const transportSchema = z.object({
   immatriculation: z.string().trim().optional(),
   chauffeur: z.string().trim().optional(),
   kilometrage: z.number().min(0).optional(),
+  nombreVehicules: z.number().int().min(0).optional(),
+  personnesParVehicule: z.array(z.number().int().min(0)).optional(),
+  immatriculationsVehicules: z.array(z.string().trim()).optional(),
+  occupantsParVehicule: z.array(z.array(vehicleOccupantSchema)).optional(),
 });
 
 export const createMissionSchema = z.object({

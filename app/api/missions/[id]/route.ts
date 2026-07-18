@@ -22,6 +22,8 @@ import {
   resolveMissionParticipants,
 } from "@/lib/services/mission/resolve-participants";
 import { archiveMissionToGed } from "@/lib/services/mission/archive-mission-to-ged";
+import { enrichMissionParticipantGrades } from "@/lib/services/mission/enrich-mission-participant-grades";
+import { normalizeMissionTransport } from "@/lib/services/mission/normalize-transport";
 import { serializeMission } from "@/lib/services/mission/serialize-mission";
 import {
   missionReportSchema,
@@ -81,6 +83,9 @@ export async function GET(_req: Request, context: RouteContext) {
     }
 
     const payload = serializeMission(mission);
+    payload.missionnaires = await enrichMissionParticipantGrades(
+      payload.missionnaires,
+    );
 
     if (mission.convocationId) {
       const convocation = await ConvocationModel.findById(mission.convocationId)
@@ -280,7 +285,16 @@ export async function PATCH(req: Request, context: RouteContext) {
     if (data.heureRetour !== undefined) mission.heureRetour = data.heureRetour;
     if (data.dateDepart !== undefined) mission.dateDepart = new Date(data.dateDepart);
     if (data.dateRetour !== undefined) mission.dateRetour = new Date(data.dateRetour);
-    if (data.transport !== undefined) mission.transport = { ...mission.transport, ...data.transport };
+    if (data.transport !== undefined) {
+      const currentTransport = (
+        mission.transport as { toObject?: () => Record<string, unknown> } | null
+      )?.toObject?.() ?? { ...(mission.transport as object) };
+      mission.transport = normalizeMissionTransport({
+        ...currentTransport,
+        ...data.transport,
+      });
+      mission.markModified("transport");
+    }
     if (data.budget !== undefined) {
       mission.budget = { ...mission.budget, ...data.budget };
     }

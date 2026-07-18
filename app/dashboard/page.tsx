@@ -1,5 +1,6 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { ChartAreaInteractive } from "@/components/chart-area-interactive";
+import { MaintenanceModeCard } from "@/components/dashboard/maintenance-mode-card";
 import {
   UsersTable,
 } from "@/components/dashboard/users-table";
@@ -51,6 +52,7 @@ export default async function Page() {
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+              <MaintenanceModeCard />
               <SectionCards stats={dashboardStats.cards} />
               <div className="px-4 lg:px-6">
                 <ChartAreaInteractive data={dashboardStats.chart} />

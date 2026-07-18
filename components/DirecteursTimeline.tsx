@@ -45,11 +45,11 @@ export default function DirecteursTimeline() {
         </div>
 
         {/* Note disclaimer */}
-        <div className="mt-16 p-4 bg-[#FBF3E2] border-l-4 border-[#C9A574] rounded text-sm text-[#7B4F2A] max-w-3xl mx-auto">
+        {/* <div className="mt-16 p-4 bg-[#FBF3E2] border-l-4 border-[#C9A574] rounded text-sm text-[#7B4F2A] max-w-3xl mx-auto">
           <strong>Note :</strong> Les éléments biographiques sont une présentation
           synthétique. Les contenus officiels seront enrichis par les services de
           l&apos;INP via le back-office.
-        </div>
+        </div> */}
       </div>
     </section>
   );

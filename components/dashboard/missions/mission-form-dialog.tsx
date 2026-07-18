@@ -23,6 +23,10 @@ import {
   MissionAttachmentUpload,
   type MissionAttachmentDraft,
 } from "@/components/dashboard/missions/mission-attachment-upload";
+import {
+  VehicleOccupantsPicker,
+  type VehicleOccupantSnapshot,
+} from "@/components/dashboard/missions/vehicle-occupants-picker";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -44,17 +48,13 @@ import {
 import {
   MISSION_PRIORITIES,
   MISSION_PRIORITY_LABELS,
-  MISSION_TRANSPORT_LABELS,
-  MISSION_TRANSPORT_MEANS,
   MISSION_TYPE_LABELS,
   MISSION_TYPES,
   type MissionPriority,
-  type MissionTransportMean,
   type MissionType,
 } from "@/lib/constants/mission";
 import { SENEGAL_REGIONS } from "@/lib/constants/senegal-regions";
 import {
-  computeMissionBudgetPrevu,
   computeMissionDurationDays,
   isInternationalMission,
 } from "@/lib/services/mission/compute-mission";
@@ -66,10 +66,12 @@ import { cn } from "@/lib/utils";
 const STEPS = [
   { id: "general", label: "Général", icon: PlaneIcon },
   { id: "location", label: "Localisation", icon: MapPinIcon },
-  { id: "team", label: "Dates & équipe", icon: UsersIcon },
   { id: "budget", label: "Transport & budget", icon: WalletIcon },
+  { id: "team", label: "Dates & équipe", icon: UsersIcon },
   { id: "attachments", label: "Pièces & envoi", icon: PaperclipIcon },
 ] as const;
+
+const MAX_VEHICULES = 20;
 
 type StepId = (typeof STEPS)[number]["id"];
 
@@ -96,20 +98,12 @@ type MissionFormState = {
   chefMissionId: string;
   missionnaireIds: string[];
   transport: {
-    moyen: MissionTransportMean | "";
-    immatriculation: string;
-    chauffeur: string;
-    kilometrage: string;
+    nombreVehicules: string;
+    personnesParVehicule: string[];
+    immatriculationsVehicules: string[];
+    occupantsParVehicule: VehicleOccupantSnapshot[][];
   };
-  budget: {
-    perDiem: string;
-    hebergement: string;
-    transport: string;
-    carburant: string;
-    peage: string;
-    communication: string;
-    divers: string;
-  };
+  budgetGlobal: string;
   attachments: MissionAttachmentDraft[];
 };
 
@@ -147,26 +141,32 @@ function missionToFormState(mission: SerializedMission): MissionFormState {
     heureRetour: mission.heureRetour ?? "18:00",
     chefMissionId: mission.chefMissionId,
     missionnaireIds: mission.missionnaires.map((m) => m.userId),
-    transport: {
-      moyen: mission.transport.moyen ?? "",
-      immatriculation: mission.transport.immatriculation ?? "",
-      chauffeur: mission.transport.chauffeur ?? "",
-      kilometrage:
-        mission.transport.kilometrage !== undefined
-          ? String(mission.transport.kilometrage)
-          : "",
-    },
-    budget: {
-      perDiem: mission.budget.perDiem ? String(mission.budget.perDiem) : "",
-      hebergement: mission.budget.hebergement ? String(mission.budget.hebergement) : "",
-      transport: mission.budget.transport ? String(mission.budget.transport) : "",
-      carburant: mission.budget.carburant ? String(mission.budget.carburant) : "",
-      peage: mission.budget.peage ? String(mission.budget.peage) : "",
-      communication: mission.budget.communication
-        ? String(mission.budget.communication)
-        : "",
-      divers: mission.budget.divers ? String(mission.budget.divers) : "",
-    },
+    transport: (() => {
+      const count = mission.transport.nombreVehicules ?? 0;
+      const existing = mission.transport.personnesParVehicule ?? [];
+      const plates = mission.transport.immatriculationsVehicules ?? [];
+      const occupants = mission.transport.occupantsParVehicule ?? [];
+      return {
+        nombreVehicules: count > 0 ? String(count) : "",
+        personnesParVehicule: Array.from({ length: count }, (_, index) =>
+          existing[index] !== undefined ? String(existing[index]) : "",
+        ),
+        immatriculationsVehicules: Array.from({ length: count }, (_, index) =>
+          plates[index] ?? "",
+        ),
+        occupantsParVehicule: Array.from({ length: count }, (_, index) =>
+          (occupants[index] ?? []).map((o) => ({
+            userId: o.userId,
+            fullname: o.fullname,
+            occupation: o.occupation,
+            service: o.service,
+          })),
+        ),
+      };
+    })(),
+    budgetGlobal: mission.budget.budgetPrevu
+      ? String(mission.budget.budgetPrevu)
+      : "",
     attachments: mission.attachments,
   };
 }
@@ -201,20 +201,12 @@ function emptyForm(userId: string): MissionFormState {
     chefMissionId: userId,
     missionnaireIds: userId ? [userId] : [],
     transport: {
-      moyen: "",
-      immatriculation: "",
-      chauffeur: "",
-      kilometrage: "",
+      nombreVehicules: "",
+      personnesParVehicule: [],
+      immatriculationsVehicules: [],
+      occupantsParVehicule: [],
     },
-    budget: {
-      perDiem: "",
-      hebergement: "",
-      transport: "",
-      carburant: "",
-      peage: "",
-      communication: "",
-      divers: "",
-    },
+    budgetGlobal: "",
     attachments: [],
   };
 }
@@ -229,6 +221,28 @@ function buildDestinationLabel(form: MissionFormState) {
   return [form.commune, form.departement, form.region, form.pays]
     .filter(Boolean)
     .join(", ");
+}
+
+function occupantToAgent(occupant: VehicleOccupantSnapshot): MissionAgentOption {
+  const parts = occupant.fullname.trim().split(/\s+/);
+  const firstname = parts[0] ?? occupant.fullname;
+  const lastname = parts.slice(1).join(" ");
+  return {
+    _id: occupant.userId,
+    firstname,
+    lastname,
+    email: "",
+    occupation: occupant.occupation,
+    service: occupant.service,
+  };
+}
+
+function collectOccupantIds(occupantsParVehicule: VehicleOccupantSnapshot[][]) {
+  return occupantsParVehicule.flat().map((o) => o.userId).filter(Boolean);
+}
+
+function mergeMissionnaireIds(current: string[], extra: string[]) {
+  return [...new Set([...current, ...extra])];
 }
 
 export function MissionFormDialog({
@@ -251,6 +265,7 @@ export function MissionFormDialog({
     { id: string; title: string; meetingAt: string }[]
   >([]);
   const [loadingConvocation, setLoadingConvocation] = useState(false);
+  const [knownAgents, setKnownAgents] = useState<MissionAgentOption[]>([]);
 
   const canValidateOnCreate = canManageAllMissions(
     (session?.user?.role ?? "agent") as UserRole,
@@ -267,9 +282,34 @@ export function MissionFormDialog({
     };
   }, [session?.user]);
 
+  const vehicleKnownAgents = useMemo(() => {
+    const map = new Map<string, MissionAgentOption>();
+    for (const agent of knownAgents) map.set(agent._id, agent);
+    for (const vehicle of form.transport.occupantsParVehicule) {
+      for (const occupant of vehicle) {
+        map.set(occupant.userId, occupantToAgent(occupant));
+      }
+    }
+    return [...map.values()];
+  }, [form.transport.occupantsParVehicule, knownAgents]);
+
+  const syncOccupantsIntoMissionnaires = useCallback(() => {
+    setForm((prev) => {
+      const occupantIds = collectOccupantIds(prev.transport.occupantsParVehicule);
+      if (occupantIds.length === 0) return prev;
+      const missionnaireIds = mergeMissionnaireIds(
+        prev.missionnaireIds,
+        occupantIds,
+      );
+      if (missionnaireIds.length === prev.missionnaireIds.length) return prev;
+      return { ...prev, missionnaireIds };
+    });
+  }, []);
+
   const resetForm = useCallback(() => {
     setStepIndex(0);
     setForm(emptyForm(userId));
+    setKnownAgents([]);
     setErrors({});
     setSubmitMode("draft");
   }, [userId]);
@@ -337,7 +377,27 @@ export function MissionFormDialog({
       .then(({ ok, data }) => {
         if (cancelled) return;
         if (!ok) throw new Error(data.error);
-        setForm(missionToFormState(data as SerializedMission));
+        const mission = data as SerializedMission;
+        setForm(missionToFormState(mission));
+
+        const agents = new Map<string, MissionAgentOption>();
+        for (const m of mission.missionnaires) {
+          const parts = m.fullname.trim().split(/\s+/);
+          agents.set(m.userId, {
+            _id: m.userId,
+            firstname: parts[0] ?? m.fullname,
+            lastname: parts.slice(1).join(" "),
+            email: m.email,
+            occupation: m.occupation,
+            service: m.service,
+          });
+        }
+        for (const vehicle of mission.transport.occupantsParVehicule ?? []) {
+          for (const occupant of vehicle) {
+            agents.set(occupant.userId, occupantToAgent(occupant));
+          }
+        }
+        setKnownAgents([...agents.values()]);
       })
       .catch((error) => {
         if (!cancelled) {
@@ -365,18 +425,43 @@ export function MissionFormDialog({
   }, [form.dateDepart, form.dateRetour, form.heureDepart, form.heureRetour]);
 
   const budgetPrevu = useMemo(
-    () =>
-      computeMissionBudgetPrevu({
-        perDiem: parseNumber(form.budget.perDiem) ?? 0,
-        hebergement: parseNumber(form.budget.hebergement) ?? 0,
-        transport: parseNumber(form.budget.transport) ?? 0,
-        carburant: parseNumber(form.budget.carburant) ?? 0,
-        peage: parseNumber(form.budget.peage) ?? 0,
-        communication: parseNumber(form.budget.communication) ?? 0,
-        divers: parseNumber(form.budget.divers) ?? 0,
-      }),
-    [form.budget],
+    () => parseNumber(form.budgetGlobal) ?? 0,
+    [form.budgetGlobal],
   );
+
+  const setNombreVehicules = (raw: string) => {
+    const parsed = Number(raw.replace(/\s/g, ""));
+    const count = Number.isFinite(parsed)
+      ? Math.max(0, Math.min(MAX_VEHICULES, Math.floor(parsed)))
+      : 0;
+
+    setForm((prev) => {
+      const nextPersonnes = Array.from({ length: count }, (_, index) =>
+        prev.transport.personnesParVehicule[index] ?? "",
+      );
+      const nextImmatriculations = Array.from({ length: count }, (_, index) =>
+        prev.transport.immatriculationsVehicules[index] ?? "",
+      );
+      const nextOccupants = Array.from({ length: count }, (_, index) =>
+        prev.transport.occupantsParVehicule[index] ?? [],
+      );
+      return {
+        ...prev,
+        transport: {
+          nombreVehicules: raw === "" ? "" : String(count),
+          personnesParVehicule: nextPersonnes,
+          immatriculationsVehicules: nextImmatriculations,
+          occupantsParVehicule: nextOccupants,
+        },
+      };
+    });
+    setErrors((prev) => {
+      const next = { ...prev };
+      delete next.nombreVehicules;
+      delete next.personnesParVehicule;
+      return next;
+    });
+  };
 
   const updateForm = <K extends keyof MissionFormState>(
     key: K,
@@ -399,6 +484,18 @@ export function MissionFormDialog({
 
     if (step === "location") {
       if (!form.pays.trim()) nextErrors.pays = "Le pays est requis";
+    }
+
+    if (step === "budget") {
+      const vehicules = parseNumber(form.transport.nombreVehicules);
+      if (vehicules !== undefined && vehicules > 0) {
+        form.transport.personnesParVehicule.forEach((value, index) => {
+          if (!value.trim() || parseNumber(value) === undefined) {
+            nextErrors[`vehicule-${index}`] =
+              `Indiquez le nombre de personnes pour la voiture ${index + 1}`;
+          }
+        });
+      }
     }
 
     if (step === "team") {
@@ -426,6 +523,10 @@ export function MissionFormDialog({
   const goNext = () => {
     const step = STEPS[stepIndex]?.id;
     if (!step || !validateStep(step)) return;
+    // En quittant Transport & budget → Dates & équipe : sync occupants → missionnaires
+    if (step === "budget") {
+      syncOccupantsIntoMissionnaires();
+    }
     setStepIndex((prev) => Math.min(prev + 1, STEPS.length - 1));
   };
 
@@ -443,6 +544,14 @@ export function MissionFormDialog({
     setSubmitMode(mode);
 
     try {
+      const occupantIds = form.transport.occupantsParVehicule
+        .flat()
+        .map((o) => o.userId)
+        .filter(Boolean);
+      const missionnaireIds = [
+        ...new Set([...form.missionnaireIds, ...occupantIds]),
+      ];
+
       const payload = {
         objet: form.objet.trim(),
         description: form.description.trim() || undefined,
@@ -463,21 +572,39 @@ export function MissionFormDialog({
         dateRetour: form.dateRetour,
         heureRetour: form.heureRetour || undefined,
         chefMissionId: form.chefMissionId,
-        missionnaireIds: form.missionnaireIds,
-        transport: {
-          moyen: form.transport.moyen || undefined,
-          immatriculation: form.transport.immatriculation.trim() || undefined,
-          chauffeur: form.transport.chauffeur.trim() || undefined,
-          kilometrage: parseNumber(form.transport.kilometrage),
-        },
+        missionnaireIds,
+        transport: (() => {
+          const immatriculationsVehicules = form.transport.immatriculationsVehicules.map(
+            (value) => value.trim(),
+          );
+          const filledPlates = immatriculationsVehicules.filter(Boolean);
+          return {
+            nombreVehicules: parseNumber(form.transport.nombreVehicules),
+            personnesParVehicule: form.transport.personnesParVehicule.map(
+              (value) => parseNumber(value) ?? 0,
+            ),
+            immatriculationsVehicules,
+            immatriculation: filledPlates.length > 0 ? filledPlates.join(" / ") : undefined,
+            occupantsParVehicule: form.transport.occupantsParVehicule.map(
+              (vehicle) =>
+                vehicle.map((o) => ({
+                  userId: o.userId,
+                  fullname: o.fullname,
+                  occupation: o.occupation,
+                  service: o.service,
+                })),
+            ),
+          };
+        })(),
         budget: {
-          perDiem: parseNumber(form.budget.perDiem),
-          hebergement: parseNumber(form.budget.hebergement),
-          transport: parseNumber(form.budget.transport),
-          carburant: parseNumber(form.budget.carburant),
-          peage: parseNumber(form.budget.peage),
-          communication: parseNumber(form.budget.communication),
-          divers: parseNumber(form.budget.divers),
+          budgetPrevu: parseNumber(form.budgetGlobal) ?? 0,
+          perDiem: 0,
+          hebergement: 0,
+          transport: 0,
+          carburant: 0,
+          peage: 0,
+          communication: 0,
+          divers: 0,
         },
         attachments: form.attachments,
         ...(form.convocationId && !isEditMode
@@ -526,6 +653,13 @@ export function MissionFormDialog({
   };
 
   const currentStep = STEPS[stepIndex];
+
+  // Si on arrive sur Dates & équipe (ex. navigation), resync les occupants
+  useEffect(() => {
+    if (currentStep?.id === "team") {
+      syncOccupantsIntoMissionnaires();
+    }
+  }, [currentStep?.id, syncOccupantsIntoMissionnaires]);
   const isLastStep = stepIndex === STEPS.length - 1;
 
   return (
@@ -876,7 +1010,29 @@ export function MissionFormDialog({
               <MissionAgentPicker
                 selectedIds={form.missionnaireIds}
                 chefMissionId={form.chefMissionId}
-                onSelectedChange={(ids) => updateForm("missionnaireIds", ids)}
+                knownAgents={vehicleKnownAgents}
+                onSelectedChange={(ids) => {
+                  setForm((prev) => ({
+                    ...prev,
+                    missionnaireIds: ids,
+                    chefMissionId: ids.includes(prev.chefMissionId)
+                      ? prev.chefMissionId
+                      : (ids[0] ?? ""),
+                    // Retirer des voitures les personnes enlevées de l'équipe
+                    transport: {
+                      ...prev.transport,
+                      occupantsParVehicule:
+                        prev.transport.occupantsParVehicule.map((vehicle) =>
+                          vehicle.filter((o) => ids.includes(o.userId)),
+                        ),
+                    },
+                  }));
+                  setErrors((prev) => {
+                    const next = { ...prev };
+                    delete next.missionnaireIds;
+                    return next;
+                  });
+                }}
                 onChefChange={(id) => updateForm("chefMissionId", id)}
                 currentUser={currentUser}
                 disabled={submitting}
@@ -888,113 +1044,175 @@ export function MissionFormDialog({
           )}
 
           {currentStep?.id === "budget" && (
-            <div className="space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>Moyen de transport</Label>
-                  <Select
-                    value={form.transport.moyen || "none"}
-                    onValueChange={(value) =>
-                      setForm((prev) => ({
-                        ...prev,
-                        transport: {
-                          ...prev.transport,
-                          moyen:
-                            value === "none" ? "" : ((value ?? "") as MissionTransportMean),
-                        },
-                      }))
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Sélectionner" />
-                    </SelectTrigger>
-                    <SelectContent {...SELECT_IN_DIALOG}>
-                      <SelectItem value="none">—</SelectItem>
-                      {MISSION_TRANSPORT_MEANS.map((mean) => (
-                        <SelectItem key={mean} value={mean}>
-                          {MISSION_TRANSPORT_LABELS[mean]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="mission-immatriculation">Immatriculation</Label>
-                  <Input
-                    id="mission-immatriculation"
-                    value={form.transport.immatriculation}
-                    onChange={(e) =>
-                      setForm((prev) => ({
-                        ...prev,
-                        transport: { ...prev.transport, immatriculation: e.target.value },
-                      }))
-                    }
-                  />
-                </div>
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="mission-budget-global">Budget global de la mission (FCFA)</Label>
+                <Input
+                  id="mission-budget-global"
+                  inputMode="numeric"
+                  placeholder="Ex. 500000"
+                  value={form.budgetGlobal}
+                  onChange={(e) => updateForm("budgetGlobal", e.target.value)}
+                />
+                {budgetPrevu > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    Montant saisi : {budgetPrevu.toLocaleString("fr-FR")} FCFA
+                  </p>
+                )}
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-3 rounded-xl border border-border/60 p-4">
+                <p className="text-sm font-semibold">Transport</p>
                 <div className="space-y-2">
-                  <Label htmlFor="mission-chauffeur">Chauffeur</Label>
+                  <Label htmlFor="mission-nombre-vehicules">Nombre de voitures</Label>
                   <Input
-                    id="mission-chauffeur"
-                    value={form.transport.chauffeur}
-                    onChange={(e) =>
-                      setForm((prev) => ({
-                        ...prev,
-                        transport: { ...prev.transport, chauffeur: e.target.value },
-                      }))
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="mission-kilometrage">Kilométrage estimé</Label>
-                  <Input
-                    id="mission-kilometrage"
+                    id="mission-nombre-vehicules"
                     inputMode="numeric"
-                    value={form.transport.kilometrage}
-                    onChange={(e) =>
-                      setForm((prev) => ({
-                        ...prev,
-                        transport: { ...prev.transport, kilometrage: e.target.value },
-                      }))
-                    }
+                    min={0}
+                    max={MAX_VEHICULES}
+                    placeholder="Ex. 2"
+                    value={form.transport.nombreVehicules}
+                    onChange={(e) => setNombreVehicules(e.target.value)}
                   />
                 </div>
-              </div>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                {(
-                  [
-                    ["perDiem", "Per diem total"],
-                    ["hebergement", "Hébergement"],
-                    ["transport", "Transport"],
-                    ["carburant", "Carburant"],
-                    ["peage", "Péage"],
-                    ["communication", "Communication"],
-                    ["divers", "Divers"],
-                  ] as const
-                ).map(([key, label]) => (
-                  <div key={key} className="space-y-2">
-                    <Label htmlFor={`mission-budget-${key}`}>{label} (FCFA)</Label>
-                    <Input
-                      id={`mission-budget-${key}`}
-                      inputMode="numeric"
-                      value={form.budget[key]}
-                      onChange={(e) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          budget: { ...prev.budget, [key]: e.target.value },
-                        }))
-                      }
-                    />
+                {form.transport.personnesParVehicule.length > 0 && (
+                  <div className="space-y-3">
+                    {form.transport.personnesParVehicule.map((value, index) => {
+                      const excludeIds = form.transport.occupantsParVehicule
+                        .flatMap((vehicle, vehicleIndex) =>
+                          vehicleIndex === index
+                            ? []
+                            : vehicle.map((o) => o.userId),
+                        );
+
+                      return (
+                        <div
+                          key={`vehicule-${index}`}
+                          className="grid gap-3 rounded-lg border border-border/50 bg-muted/10 p-3 sm:grid-cols-2"
+                        >
+                          <p className="text-xs font-medium text-muted-foreground sm:col-span-2">
+                            Voiture {index + 1}
+                          </p>
+                          <div className="space-y-2">
+                            <Label htmlFor={`mission-vehicule-${index}`}>
+                              Nombre de personnes
+                            </Label>
+                            <Input
+                              id={`mission-vehicule-${index}`}
+                              inputMode="numeric"
+                              min={0}
+                              placeholder="Ex. 4"
+                              value={value}
+                              onChange={(e) =>
+                                setForm((prev) => {
+                                  const next = [
+                                    ...prev.transport.personnesParVehicule,
+                                  ];
+                                  next[index] = e.target.value;
+                                  return {
+                                    ...prev,
+                                    transport: {
+                                      ...prev.transport,
+                                      personnesParVehicule: next,
+                                    },
+                                  };
+                                })
+                              }
+                            />
+                            {errors[`vehicule-${index}`] && (
+                              <p className="text-xs text-destructive">
+                                {errors[`vehicule-${index}`]}
+                              </p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor={`mission-immat-${index}`}>
+                              Immatriculation{" "}
+                              <span className="font-normal text-muted-foreground">
+                                (optionnel)
+                              </span>
+                            </Label>
+                            <Input
+                              id={`mission-immat-${index}`}
+                              placeholder="Ex. AD 3899"
+                              value={
+                                form.transport.immatriculationsVehicules[index] ?? ""
+                              }
+                              onChange={(e) =>
+                                setForm((prev) => {
+                                  const next = [
+                                    ...prev.transport.immatriculationsVehicules,
+                                  ];
+                                  next[index] = e.target.value;
+                                  return {
+                                    ...prev,
+                                    transport: {
+                                      ...prev.transport,
+                                      immatriculationsVehicules: next,
+                                    },
+                                  };
+                                })
+                              }
+                            />
+                          </div>
+                          <VehicleOccupantsPicker
+                            vehicleIndex={index}
+                            selected={
+                              form.transport.occupantsParVehicule[index] ?? []
+                            }
+                            excludeIds={excludeIds}
+                            disabled={submitting}
+                            onChange={(nextOccupants) => {
+                              setKnownAgents((prev) => {
+                                const map = new Map(
+                                  prev.map((a) => [a._id, a] as const),
+                                );
+                                for (const occupant of nextOccupants) {
+                                  map.set(
+                                    occupant.userId,
+                                    occupantToAgent(occupant),
+                                  );
+                                }
+                                return [...map.values()];
+                              });
+                              setForm((prev) => {
+                                const next = [
+                                  ...prev.transport.occupantsParVehicule,
+                                ];
+                                next[index] = nextOccupants;
+                                const nextCounts = [
+                                  ...prev.transport.personnesParVehicule,
+                                ];
+                                if (
+                                  nextOccupants.length > 0 &&
+                                  !nextCounts[index]?.trim()
+                                ) {
+                                  nextCounts[index] = String(
+                                    nextOccupants.length,
+                                  );
+                                }
+                                const allOccupantIds = collectOccupantIds(next);
+                                return {
+                                  ...prev,
+                                  missionnaireIds: mergeMissionnaireIds(
+                                    prev.missionnaireIds,
+                                    allOccupantIds,
+                                  ),
+                                  transport: {
+                                    ...prev.transport,
+                                    occupantsParVehicule: next,
+                                    personnesParVehicule: nextCounts,
+                                  },
+                                };
+                              });
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
-                ))}
-              </div>
-
-              <div className="rounded-xl border border-[var(--inp-vert)]/20 bg-[var(--inp-vert)]/5 px-4 py-3 text-sm">
-                Budget prévisionnel total :{" "}
-                <strong>{budgetPrevu.toLocaleString("fr-FR")} FCFA</strong>
+                )}
               </div>
             </div>
           )}
@@ -1031,9 +1249,26 @@ export function MissionFormDialog({
                     <dd className="text-right">{form.missionnaireIds.length}</dd>
                   </div>
                   <div className="flex justify-between gap-4">
-                    <dt className="text-muted-foreground">Budget prévu</dt>
+                    <dt className="text-muted-foreground">Budget global</dt>
                     <dd className="text-right font-medium">
                       {budgetPrevu.toLocaleString("fr-FR")} FCFA
+                    </dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-muted-foreground">Voitures</dt>
+                    <dd className="text-right">
+                      {form.transport.nombreVehicules || "0"}
+                      {form.transport.personnesParVehicule.length > 0
+                        ? ` (${form.transport.personnesParVehicule
+                            .map((n) => n || "0")
+                            .join(" / ")} pers.)`
+                        : ""}
+                      {(() => {
+                        const plates = form.transport.immatriculationsVehicules
+                          .map((p) => p.trim())
+                          .filter(Boolean);
+                        return plates.length > 0 ? ` · ${plates.join(", ")}` : "";
+                      })()}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-4">

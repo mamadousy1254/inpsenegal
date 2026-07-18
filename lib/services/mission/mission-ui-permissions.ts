@@ -1,5 +1,9 @@
 import type { IMission, IMissionValidation } from "@/lib/mongo/models/mission.model";
-import { canManageAllMissions, isMissionManagerRole } from "@/lib/permissions/can";
+import {
+  canGenerateOrdreMission,
+  canManageAllMissions,
+  isMissionManagerRole,
+} from "@/lib/permissions/can";
 import type { UserRole } from "@/lib/permissions/roles";
 import {
   canDeleteMission,
@@ -74,6 +78,7 @@ export function getMissionDetailPermissions(input: {
       ["validee", "en_cours"].includes(mission.status) &&
       canManageAllMissions(user.role),
     canReviewProlongation,
+    canGenerateOrdreMission: canGenerateOrdreMission(user.role),
     pendingStepLabel: pendingStep?.step,
   };
 }

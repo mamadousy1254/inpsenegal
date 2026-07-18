@@ -80,6 +80,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     ...authConfig.callbacks,
     async jwt({ token, user }) {
+      // Ne pas requêter Mongo ici : ce callback tourne aussi via proxy.ts
+      // à chaque navigation et provoquait une boucle login ↔ dashboard
+      // (réécriture concurrente du cookie de session).
       if (user) {
         token.id = user.id;
         token.email = user.email;
@@ -89,29 +92,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.section = user.section;
         token.occupation = user.occupation;
         token.avatar = user.avatar;
-      }
-
-      if (token.id) {
-        try {
-          await connectDB();
-          const dbUser = await UserModel.findById(token.id)
-            .select(
-              "email firstname lastname role section occupation avatar isActive",
-            )
-            .lean();
-
-          if (dbUser?.isActive) {
-            token.email = dbUser.email;
-            token.firstname = dbUser.firstname;
-            token.lastname = dbUser.lastname;
-            token.role = dbUser.role;
-            token.section = dbUser.section;
-            token.occupation = dbUser.occupation;
-            token.avatar = dbUser.avatar;
-          }
-        } catch (error) {
-          console.error("JWT refresh utilisateur:", error);
-        }
       }
 
       return token;
