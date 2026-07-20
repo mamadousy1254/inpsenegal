@@ -77,6 +77,7 @@ const STATIC_PUBLIC_PATHS: {
   { path: "/publications", changeFrequency: "weekly", priority: 0.9 },
   { path: "/actualites", changeFrequency: "weekly", priority: 0.9 },
   { path: "/mediatheque", changeFrequency: "weekly", priority: 0.8 },
+  { path: "/cartotheque", changeFrequency: "weekly", priority: 0.8 },
   { path: "/services", changeFrequency: "monthly", priority: 0.8 },
   { path: "/partenaires", changeFrequency: "monthly", priority: 0.7 },
   { path: "/documentation", changeFrequency: "weekly", priority: 0.8 },

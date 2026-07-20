@@ -14,6 +14,12 @@ type CmsImageUploadProps = {
   folder?: string;
   label?: string;
   className?: string;
+  /** Aperçu en contain (cartes) ou cover (photos). */
+  previewFit?: "cover" | "contain";
+  /** Limite la hauteur de la zone d’aperçu / dropzone. */
+  previewClassName?: string;
+  hint?: string;
+  maxBytes?: number;
 };
 
 export function CmsImageUpload({
@@ -22,11 +28,21 @@ export function CmsImageUpload({
   folder = "actualites",
   label = "Image de couverture (16/9)",
   className,
+  previewFit = "cover",
+  previewClassName,
+  hint,
+  maxBytes = 5 * 1024 * 1024,
 }: CmsImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
   const handleFile = async (file: File) => {
+    if (file.size > maxBytes) {
+      const maxMo = maxBytes / (1024 * 1024);
+      toast.error(`Le fichier ne doit pas dépasser ${maxMo} Mo`);
+      return;
+    }
+
     setUploading(true);
     try {
       const formData = new FormData();
@@ -52,17 +68,25 @@ export function CmsImageUpload({
     }
   };
 
+  const previewBoxClass = cn(
+    "relative aspect-video w-full max-w-sm overflow-hidden rounded-lg border border-border bg-muted/20",
+    previewClassName,
+  );
+
   return (
     <div className={cn("space-y-2", className)}>
       <p className="text-sm font-medium">{label}</p>
+      {hint ? (
+        <p className="text-xs text-muted-foreground leading-snug">{hint}</p>
+      ) : null}
 
       {value?.url ? (
-        <div className="relative aspect-video max-w-md overflow-hidden rounded-lg border border-border">
+        <div className={previewBoxClass}>
           <Image
             src={value.url}
             alt="Aperçu"
             fill
-            className="object-cover"
+            className={previewFit === "contain" ? "object-contain p-2" : "object-cover"}
             sizes="400px"
           />
           <Button
@@ -80,7 +104,10 @@ export function CmsImageUpload({
           type="button"
           disabled={uploading}
           onClick={() => inputRef.current?.click()}
-          className="flex aspect-video max-w-md w-full flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-muted/30 text-sm text-muted-foreground transition-colors hover:bg-muted/50 disabled:opacity-60"
+          className={cn(
+            "flex aspect-video w-full max-w-sm flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-border bg-muted/30 px-3 text-center text-sm text-muted-foreground transition-colors hover:bg-muted/50 disabled:opacity-60",
+            previewClassName,
+          )}
         >
           {uploading ? (
             <Loader2Icon className="size-6 animate-spin" />

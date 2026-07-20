@@ -9,6 +9,7 @@ import { PublicationsSection } from "@/components/sections/publications-section"
 import { ActualitesSection } from "@/components/sections/actualites-section";
 import VideosSection from "@/components/VideosSection";
 import { MediathequeSection } from "@/components/sections/mediatheque-section";
+import { CartothequeSection } from "@/components/sections/cartotheque-section";
 import { DirectorsTimeline } from "@/components/sections/DirectorsTimeline";
 import PartnersMarquee from "@/components/PartnersMarquee";
 import { getDirector } from "@/lib/parse-server";
@@ -34,6 +35,7 @@ export default async function Home() {
       <ChiffresCles />
       <RechercheInnovation axes={researchAxes} />
       <Cartographie />
+      <CartothequeSection />
       <PublicationsSection />
       <ActualitesSection />
       {/* INP en vidéo — juste après Actualités */}

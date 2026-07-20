@@ -9,6 +9,8 @@ export const CMS_STATUS_LABELS: Record<CmsStatus, string> = {
 export const CMS_CLOUDINARY_ROOT = "cms";
 
 export const CMS_IMAGE_MAX_BYTES = 5 * 1024 * 1024;
+/** Cartes cartographiques (fichiers souvent plus lourds). */
+export const CMS_CARTOTHEQUE_IMAGE_MAX_BYTES = 10 * 1024 * 1024;
 export const CMS_PDF_MAX_BYTES = 15 * 1024 * 1024;
 
 export const CMS_IMAGE_MIME_TYPES = [

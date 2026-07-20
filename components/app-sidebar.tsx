@@ -42,6 +42,7 @@ import {
   HandshakeIcon,
   MailIcon,
   PlaneIcon,
+  MapIcon,
 } from "lucide-react";
 import { USER_ROLE_LABELS } from "@/lib/permissions/roles";
 import {
@@ -144,6 +145,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       name: "Médiathèque",
       url: "/dashboard/mediatheque",
       icon: <ImageIcon />,
+    },
+    {
+      name: "Cartothèque",
+      url: "/dashboard/cartotheque",
+      icon: <MapIcon />,
     },
     {
       name: "Documentation",

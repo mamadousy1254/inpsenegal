@@ -3,6 +3,7 @@ import ActualiteModel from "@/lib/mongo/models/actualite.model";
 import CmsVideoModel from "@/lib/mongo/models/cms-video.model";
 import PublicationModel from "@/lib/mongo/models/publication.model";
 import MediathequeItemModel from "@/lib/mongo/models/mediatheque-item.model";
+import CartothequeItemModel from "@/lib/mongo/models/cartotheque-item.model";
 import ResearchAxisModel from "@/lib/mongo/models/research-axis.model";
 import ResearchProjectModel from "@/lib/mongo/models/research-project.model";
 import {
@@ -20,6 +21,11 @@ import {
   toGalleryImage,
   type GalleryImage,
 } from "@/lib/services/cms/serialize-mediatheque";
+import {
+  serializeCartothequeItem,
+  toPublicCartothequeMap,
+  type PublicCartothequeMap,
+} from "@/lib/services/cms/serialize-cartotheque";
 
 export async function getPublishedActualites(limit?: number) {
   await connectDB();
@@ -168,6 +174,67 @@ export async function getPublishedMediathequeItems(limit?: number) {
 export async function getPublishedGallery(limit?: number): Promise<GalleryImage[]> {
   const items = await getPublishedMediathequeItems(limit);
   return items.map((item) => toGalleryImage(item));
+}
+
+export async function getPublishedCartothequeItems(limit?: number) {
+  await connectDB();
+
+  const query = CartothequeItemModel.find({ status: "publie" }).sort({
+    publishedAt: -1,
+    createdAt: -1,
+  });
+
+  if (limit) query.limit(limit);
+
+  const docs = await query.lean();
+  return docs.map((doc) => serializeCartothequeItem(doc));
+}
+
+export async function getPublishedCartothequeMaps(
+  limit?: number,
+): Promise<PublicCartothequeMap[]> {
+  const items = await getPublishedCartothequeItems(limit);
+  return items.map((item) => toPublicCartothequeMap(item));
+}
+
+export async function getPublishedCartothequePaginated(
+  page: number,
+  pageSize: number,
+): Promise<{
+  items: PublicCartothequeMap[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}> {
+  await connectDB();
+
+  const safePage = Math.max(1, page);
+  const safeSize = Math.min(48, Math.max(1, pageSize));
+  const skip = (safePage - 1) * safeSize;
+
+  const filter = { status: "publie" as const };
+
+  const [docs, total] = await Promise.all([
+    CartothequeItemModel.find(filter)
+      .sort({ publishedAt: -1, createdAt: -1 })
+      .skip(skip)
+      .limit(safeSize)
+      .lean(),
+    CartothequeItemModel.countDocuments(filter),
+  ]);
+
+  const items = docs.map((doc) =>
+    toPublicCartothequeMap(serializeCartothequeItem(doc)),
+  );
+
+  return {
+    items,
+    total,
+    page: safePage,
+    pageSize: safeSize,
+    totalPages: Math.max(1, Math.ceil(total / safeSize)),
+  };
 }
 
 /** Slugs publiés pour le sitemap */

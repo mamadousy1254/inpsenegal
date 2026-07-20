@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   CMS_CLOUDINARY_ROOT,
+  CMS_CARTOTHEQUE_IMAGE_MAX_BYTES,
   CMS_IMAGE_MAX_BYTES,
   CMS_IMAGE_MIME_TYPES,
 } from "@/lib/constants/cms";
@@ -21,9 +22,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Fichier requis" }, { status: 400 });
   }
 
-  if (file.size > CMS_IMAGE_MAX_BYTES) {
+  const maxBytes =
+    folder === "cartotheque" ? CMS_CARTOTHEQUE_IMAGE_MAX_BYTES : CMS_IMAGE_MAX_BYTES;
+  const maxMo = maxBytes / (1024 * 1024);
+
+  if (file.size > maxBytes) {
     return NextResponse.json(
-      { error: "L'image ne doit pas dépasser 5 Mo" },
+      { error: `L'image ne doit pas dépasser ${maxMo} Mo` },
       { status: 400 },
     );
   }
