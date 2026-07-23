@@ -59,7 +59,15 @@ type MissionDetailDialogProps = {
   onOpenChange: (open: boolean) => void;
   onUpdated: () => void;
   onEdit?: (missionId: string) => void;
+  initialTab?: MissionDetailTab;
 };
+
+export type MissionDetailTab =
+  | "overview"
+  | "validation"
+  | "terrain"
+  | "report"
+  | "documents";
 
 function formatDay(value?: string) {
   if (!value) return "—";
@@ -114,11 +122,13 @@ export function MissionDetailDialog({
   onOpenChange,
   onUpdated,
   onEdit,
+  initialTab = "overview",
 }: MissionDetailDialogProps) {
   const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [acting, setActing] = useState(false);
   const [mission, setMission] = useState<SerializedMission | null>(null);
+  const [detailTab, setDetailTab] = useState<MissionDetailTab>("overview");
   const [validateOpen, setValidateOpen] = useState(false);
   const [validateAction, setValidateAction] = useState<"approve" | "reject">("approve");
   const [validateComment, setValidateComment] = useState("");
@@ -173,6 +183,12 @@ export function MissionDetailDialog({
     }
     void fetchMission();
   }, [open, missionId, fetchMission]);
+
+  useEffect(() => {
+    if (open) {
+      setDetailTab(initialTab);
+    }
+  }, [open, missionId, initialTab]);
 
   const permissions = useMemo(() => {
     if (!mission || !userId || !role) return null;
@@ -404,7 +420,11 @@ export function MissionDetailDialog({
                 </DialogHeader>
               </div>
 
-              <Tabs defaultValue="overview" className="flex min-h-0 flex-1 flex-col">
+              <Tabs
+                value={detailTab}
+                onValueChange={(value) => setDetailTab(value as MissionDetailTab)}
+                className="flex min-h-0 flex-1 flex-col"
+              >
                 <div className="border-b px-6 pt-3">
                   <TabsList className="h-auto flex-wrap justify-start gap-1 bg-transparent p-0">
                     <TabsTrigger value="overview">Aperçu</TabsTrigger>

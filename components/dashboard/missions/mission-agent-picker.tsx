@@ -116,9 +116,7 @@ export function MissionAgentPicker({
   function toggleAgent(user: MissionAgentOption) {
     if (disabled) return;
     if (selectedIds.includes(user._id)) {
-      const next = selectedIds.filter((id) => id !== user._id);
-      onSelectedChange(next);
-      if (chefMissionId === user._id && next[0]) onChefChange(next[0]);
+      onSelectedChange(selectedIds.filter((id) => id !== user._id));
       return;
     }
     onSelectedChange([...selectedIds, user._id]);
@@ -211,6 +209,11 @@ export function MissionAgentPicker({
 
       <div className="space-y-2">
         <Label>Chef de mission</Label>
+        {selectedAgents.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            Ajoutez d&apos;abord les missionnaires, puis désignez le chef parmi eux.
+          </p>
+        ) : (
         <div className="grid gap-2 sm:grid-cols-2">
           {selectedAgents.map((agent) => {
             const isChef = chefMissionId === agent._id;
@@ -242,6 +245,7 @@ export function MissionAgentPicker({
             );
           })}
         </div>
+        )}
       </div>
     </div>
   );

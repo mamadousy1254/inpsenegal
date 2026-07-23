@@ -46,16 +46,15 @@ export function canAccessMission(
   return false;
 }
 
-/** Rôles autorisés à valider une étape du workflow. */
+/** Rôles autorisés à valider une étape du workflow (chef de mission, puis directeur). */
 export function canValidateMissionStep(
   user: MissionSessionUser,
   step: MissionValidationStep,
+  mission: Pick<IMission, "chefMissionId">,
 ): boolean {
-  if (canManageAllMissions(user.role)) return true;
-
   switch (step) {
     case "chef_service":
-      return isMissionManagerRole(user.role);
+      return mission.chefMissionId.toString() === user.id.toString();
     case "directeur":
       return isDirectorOrAdminRole(user.role);
     default:

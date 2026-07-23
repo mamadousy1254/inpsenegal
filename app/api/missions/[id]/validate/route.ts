@@ -89,6 +89,7 @@ export async function POST(req: Request, context: RouteContext) {
     const { allowed, step } = canUserActOnPendingStep(
       sessionUser,
       mission.validations,
+      mission,
     );
 
     if (!allowed || !step) {

@@ -25,9 +25,12 @@ function getAppBaseUrl(): string {
   ).replace(/\/$/, "");
 }
 
-function buildMissionLink(missionId?: string): string {
+function buildMissionLink(missionId?: string, tab?: string): string {
   const base = `${getAppBaseUrl()}/dashboard/missions`;
-  return missionId ? `${base}?mission=${missionId}` : base;
+  if (!missionId) return base;
+  const params = new URLSearchParams({ mission: missionId });
+  if (tab) params.set("tab", tab);
+  return `${base}?${params.toString()}`;
 }
 
 function formatDateFr(value: Date | string): string {
@@ -119,10 +122,10 @@ export async function notifyMissionValidators(input: {
 
   if (!targets.length) return [];
 
-  const link = buildMissionLink(input.mission._id);
+  const link = buildMissionLink(input.mission._id, "validation");
   const stepLabel = input.step
     ? MISSION_VALIDATION_STEP_LABELS[input.step]
-    : "Chef de service / Directeur";
+    : "Chef de mission / Directeur";
   const subject = `Mission ${input.mission.numero} — validation requise`;
   const body = [
     `Une mission est en attente de votre validation${input.step ? ` (${stepLabel})` : ""}.`,

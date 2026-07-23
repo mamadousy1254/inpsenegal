@@ -177,7 +177,7 @@ const SELECT_IN_DIALOG = {
   className: "z-[200] max-h-64",
 };
 
-function emptyForm(userId: string): MissionFormState {
+function emptyForm(): MissionFormState {
   return {
     convocationId: "",
     objet: "",
@@ -198,8 +198,8 @@ function emptyForm(userId: string): MissionFormState {
     heureDepart: "08:00",
     dateRetour: "",
     heureRetour: "18:00",
-    chefMissionId: userId,
-    missionnaireIds: userId ? [userId] : [],
+    chefMissionId: "",
+    missionnaireIds: [],
     transport: {
       nombreVehicules: "",
       personnesParVehicule: [],
@@ -256,7 +256,7 @@ export function MissionFormDialog({
   const isEditMode = Boolean(missionId);
 
   const [stepIndex, setStepIndex] = useState(0);
-  const [form, setForm] = useState<MissionFormState>(() => emptyForm(userId));
+  const [form, setForm] = useState<MissionFormState>(() => emptyForm());
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [loadingMission, setLoadingMission] = useState(false);
@@ -308,11 +308,11 @@ export function MissionFormDialog({
 
   const resetForm = useCallback(() => {
     setStepIndex(0);
-    setForm(emptyForm(userId));
+    setForm(emptyForm());
     setKnownAgents([]);
     setErrors({});
     setSubmitMode("draft");
-  }, [userId]);
+  }, []);
 
   useEffect(() => {
     if (!open || isEditMode) return;
@@ -1012,33 +1012,47 @@ export function MissionFormDialog({
                 chefMissionId={form.chefMissionId}
                 knownAgents={vehicleKnownAgents}
                 onSelectedChange={(ids) => {
-                  setForm((prev) => ({
-                    ...prev,
-                    missionnaireIds: ids,
-                    chefMissionId: ids.includes(prev.chefMissionId)
-                      ? prev.chefMissionId
-                      : (ids[0] ?? ""),
-                    // Retirer des voitures les personnes enlevées de l'équipe
-                    transport: {
-                      ...prev.transport,
-                      occupantsParVehicule:
-                        prev.transport.occupantsParVehicule.map((vehicle) =>
-                          vehicle.filter((o) => ids.includes(o.userId)),
-                        ),
-                    },
-                  }));
+                  setForm((prev) => {
+                    let chefMissionId = prev.chefMissionId;
+                    if (!ids.includes(chefMissionId)) {
+                      chefMissionId = ids.length === 1 ? ids[0] : "";
+                    }
+                    return {
+                      ...prev,
+                      missionnaireIds: ids,
+                      chefMissionId,
+                      transport: {
+                        ...prev.transport,
+                        occupantsParVehicule:
+                          prev.transport.occupantsParVehicule.map((vehicle) =>
+                            vehicle.filter((o) => ids.includes(o.userId)),
+                          ),
+                      },
+                    };
+                  });
                   setErrors((prev) => {
                     const next = { ...prev };
                     delete next.missionnaireIds;
+                    delete next.chefMissionId;
                     return next;
                   });
                 }}
-                onChefChange={(id) => updateForm("chefMissionId", id)}
+                onChefChange={(id) => {
+                  updateForm("chefMissionId", id);
+                  setErrors((prev) => {
+                    const next = { ...prev };
+                    delete next.chefMissionId;
+                    return next;
+                  });
+                }}
                 currentUser={currentUser}
                 disabled={submitting}
               />
               {errors.missionnaireIds && (
                 <p className="text-xs text-destructive">{errors.missionnaireIds}</p>
+              )}
+              {errors.chefMissionId && (
+                <p className="text-xs text-destructive">{errors.chefMissionId}</p>
               )}
             </div>
           )}

@@ -52,7 +52,7 @@ export function getMissionDetailPermissions(input: {
   const missionRef = asMissionRef(mission);
   const validations = asValidations(mission.validations);
   const participant = isMissionParticipant(missionRef, user.id);
-  const validation = canUserActOnPendingStep(user, validations);
+  const validation = canUserActOnPendingStep(user, validations, missionRef);
   const pendingStep = getCurrentPendingStep(validations);
 
   const canReviewProlongation =

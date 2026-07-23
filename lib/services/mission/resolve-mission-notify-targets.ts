@@ -1,6 +1,7 @@
 import type { MissionValidationStep } from "@/lib/constants/mission";
 import { connectDB } from "@/lib/mongo/db";
 import UserModel from "@/lib/mongo/models/user.model";
+import mongoose from "mongoose";
 
 export type MissionNotifyTarget = {
   userId: string;
@@ -12,36 +13,42 @@ export type MissionNotifyTarget = {
 export async function resolveMissionNotifyTargets(input: {
   step: MissionValidationStep;
   direction?: string;
+  chefMissionId?: string;
 }): Promise<MissionNotifyTarget[]> {
   await connectDB();
 
-  let filter: Record<string, unknown> = {
-    isActive: true,
-    role: { $ne: "partenaire" },
-  };
-
   switch (input.step) {
-    case "chef_service":
-      filter.role = "manager";
-      if (input.direction?.trim()) {
-        filter.direction = input.direction.trim();
-      }
-      break;
-    case "directeur":
-      filter.role = { $in: ["directeur", "admin", "super_admin"] };
-      break;
+    case "chef_service": {
+      const chefId = input.chefMissionId?.trim();
+      if (!chefId || !mongoose.Types.ObjectId.isValid(chefId)) return [];
+      const chef = await UserModel.findOne({ _id: chefId, isActive: true })
+        .select("firstname lastname email phone")
+        .lean();
+      if (!chef) return [];
+      return [
+        {
+          userId: chef._id.toString(),
+          fullname: `${chef.firstname} ${chef.lastname}`.trim(),
+          email: chef.email,
+          phone: chef.phone,
+        },
+      ];
+    }
+    case "directeur": {
+      const users = await UserModel.find({
+        isActive: true,
+        role: "directeur",
+      })
+        .select("firstname lastname email phone")
+        .lean();
+      return users.map((user) => ({
+        userId: user._id.toString(),
+        fullname: `${user.firstname} ${user.lastname}`.trim(),
+        email: user.email,
+        phone: user.phone,
+      }));
+    }
     default:
       return [];
   }
-
-  const users = await UserModel.find(filter)
-    .select("firstname lastname email phone")
-    .lean();
-
-  return users.map((user) => ({
-    userId: user._id.toString(),
-    fullname: `${user.firstname} ${user.lastname}`.trim(),
-    email: user.email,
-    phone: user.phone,
-  }));
 }

@@ -134,7 +134,7 @@ export const MISSION_VALIDATION_STEPS = ["chef_service", "directeur"] as const;
 export type MissionValidationStep = (typeof MISSION_VALIDATION_STEPS)[number];
 
 export const MISSION_VALIDATION_STEP_LABELS: Record<MissionValidationStep, string> = {
-  chef_service: "Chef de service",
+  chef_service: "Chef de mission",
   directeur: "Directeur",
 };
 

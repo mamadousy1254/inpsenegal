@@ -1,5 +1,4 @@
 import type { IMission } from "@/lib/mongo/models/mission.model";
-import { MISSION_VALIDATION_STEPS } from "@/lib/constants/mission";
 import {
   notifyMissionCreator,
   notifyMissionParticipantsValidated,
@@ -7,8 +6,8 @@ import {
 } from "@/lib/services/mission/notify-mission-workflow";
 import {
   resolveMissionNotifyTargets,
-  type MissionNotifyTarget,
 } from "@/lib/services/mission/resolve-mission-notify-targets";
+import { getCurrentPendingStep } from "@/lib/services/mission/validation-workflow";
 
 function resolveChefFullname(mission: IMission): string | undefined {
   const chefId = mission.chefMissionId.toString();
@@ -55,28 +54,23 @@ export async function notifyAfterMissionSubmitted(mission: IMission): Promise<vo
   await notifyMissionPendingValidators(mission);
 }
 
-/** Notifie chef de service et directeur lors de la création/soumission. */
+/** Notifie uniquement le validateur de l'étape en cours (chef de mission, puis directeur). */
 export async function notifyMissionPendingValidators(mission: IMission): Promise<void> {
-  const payload = missionNotifyPayload(mission);
-  const seen = new Set<string>();
-  const targets: MissionNotifyTarget[] = [];
+  const pending = getCurrentPendingStep(mission.validations ?? []);
+  if (!pending) return;
 
-  for (const step of MISSION_VALIDATION_STEPS) {
-    const stepTargets = await resolveMissionNotifyTargets({
-      step,
-      direction: mission.direction,
-    });
-    for (const target of stepTargets) {
-      if (seen.has(target.userId)) continue;
-      seen.add(target.userId);
-      targets.push(target);
-    }
-  }
+  const payload = missionNotifyPayload(mission);
+  const targets = await resolveMissionNotifyTargets({
+    step: pending.step,
+    direction: mission.direction,
+    chefMissionId: mission.chefMissionId.toString(),
+  });
 
   if (!targets.length) return;
 
   await notifyMissionValidators({
     mission: payload,
+    step: pending.step,
     targets,
   });
 }
@@ -105,5 +99,7 @@ export async function notifyAfterMissionValidated(input: {
     return;
   }
 
-  // Les validateurs sont notifiés uniquement à la soumission, pas à chaque étape.
+  if (mission.status === "en_validation") {
+    await notifyMissionPendingValidators(mission);
+  }
 }

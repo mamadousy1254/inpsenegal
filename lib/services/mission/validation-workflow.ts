@@ -32,10 +32,11 @@ export function hasRejectedValidation(validations: IMissionValidation[]): boolea
 export function canUserActOnPendingStep(
   user: MissionSessionUser,
   validations: IMissionValidation[],
+  mission: Pick<IMission, "chefMissionId">,
 ): { allowed: boolean; step?: MissionValidationStep } {
   const pending = getCurrentPendingStep(validations);
   if (!pending) return { allowed: false };
-  const allowed = canValidateMissionStep(user, pending.step);
+  const allowed = canValidateMissionStep(user, pending.step, mission);
   return { allowed, step: pending.step };
 }
 

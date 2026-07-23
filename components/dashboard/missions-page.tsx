@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 import { useCurrentDbUser } from "@/components/providers/current-user-provider";
@@ -23,6 +24,7 @@ import { MissionStatCard } from "@/components/dashboard/missions/mission-stat-ca
 import { MissionsCharts } from "@/components/dashboard/missions/missions-charts";
 import { MissionFormDialog } from "@/components/dashboard/missions/mission-form-dialog";
 import { MissionDetailDialog } from "@/components/dashboard/missions/mission-detail-dialog";
+import type { MissionDetailTab } from "@/components/dashboard/missions/mission-detail-dialog";
 import {
   MissionsFilters,
   type MissionsFiltersState,
@@ -64,8 +66,30 @@ function formatBudgetShort(value: number) {
   return value.toLocaleString("fr-FR");
 }
 
+const MISSION_DETAIL_TABS: MissionDetailTab[] = [
+  "overview",
+  "validation",
+  "terrain",
+  "report",
+  "documents",
+];
+
+function parseMissionDetailTab(value: string | null): MissionDetailTab | null {
+  if (!value) return null;
+  return MISSION_DETAIL_TABS.includes(value as MissionDetailTab)
+    ? (value as MissionDetailTab)
+    : null;
+}
+
+function isLikelyObjectId(value: string) {
+  return /^[a-f0-9]{24}$/i.test(value);
+}
+
 export function MissionsPage() {
   const { data: session, status: sessionStatus } = useSession();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const { user: dbUser, isLoading: userLoading } = useCurrentDbUser();
   const role = (dbUser?.role ?? session?.user?.role) as UserRole | undefined;
   const roleReady = sessionStatus !== "loading" && !userLoading && Boolean(role);
@@ -87,6 +111,7 @@ export function MissionsPage() {
   const [calendarRefreshKey, setCalendarRefreshKey] = useState(0);
   const [detailMissionId, setDetailMissionId] = useState<string | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+  const [detailInitialTab, setDetailInitialTab] = useState<MissionDetailTab>("overview");
   const [editMissionId, setEditMissionId] = useState<string | null>(null);
   const [editOpen, setEditOpen] = useState(false);
 
@@ -149,7 +174,28 @@ export function MissionsPage() {
     void fetchMissions();
   }, [fetchMissions, roleReady]);
 
-  const openMissionDetail = (missionId: string) => {
+  const clearMissionDeepLink = useCallback(() => {
+    if (!searchParams.get("mission") && !searchParams.get("tab")) return;
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete("mission");
+    params.delete("tab");
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  }, [pathname, router, searchParams]);
+
+  useEffect(() => {
+    if (!roleReady) return;
+    const missionParam = searchParams.get("mission")?.trim();
+    if (!missionParam || !isLikelyObjectId(missionParam)) return;
+
+    const tabFromUrl = parseMissionDetailTab(searchParams.get("tab"));
+    setDetailMissionId(missionParam);
+    setDetailInitialTab(tabFromUrl ?? "validation");
+    setDetailOpen(true);
+  }, [roleReady, searchParams]);
+
+  const openMissionDetail = (missionId: string, tab: MissionDetailTab = "overview") => {
+    setDetailInitialTab(tab);
     setDetailMissionId(missionId);
     setDetailOpen(true);
   };
@@ -411,7 +457,14 @@ export function MissionsPage() {
       <MissionDetailDialog
         missionId={detailMissionId}
         open={detailOpen}
-        onOpenChange={setDetailOpen}
+        initialTab={detailInitialTab}
+        onOpenChange={(open) => {
+          setDetailOpen(open);
+          if (!open) {
+            setDetailMissionId(null);
+            clearMissionDeepLink();
+          }
+        }}
         onUpdated={handleMissionUpdated}
         onEdit={(id) => {
           setEditMissionId(id);
